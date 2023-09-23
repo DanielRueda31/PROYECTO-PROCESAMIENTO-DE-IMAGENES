@@ -60,6 +60,16 @@ function convertirTricolor(evt) {
     imagenSal.imageArray2DtoData(pantalla2, MathImg.toTricolor(imagenSal));
 }
 ////////////hasta aqui
+//este codigo se agreo el 23 de septiembre de 2023
+function convertirTricolorHorizontal(evt) {
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    imagenSal.imageArray2DtoData(pantalla2, MathImg.toTricolorHorizontal(imagenSal));
+}
+function convertirMarciano(evt) {
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    imagenSal.imageArray2DtoData(pantalla2, MathImg.toMarciano(imagenSal));
+}
+///nuevo codigo
 function correccionGamma(evt) {
     var args = prompt('Ingresa los factores de correccion Gamma, separados por coma');
     var factores = args.split(',').map(function (elem) { return parseFloat(elem); });
@@ -401,6 +411,8 @@ document.getElementById("op-rojo").addEventListener('click', convertirARojo, fal
 document.getElementById("op-verde").addEventListener('click', convertirAVerde, false);
 document.getElementById("op-azul").addEventListener('click', convertirAAzul, false);
 document.getElementById("op-tricolor").addEventListener('click', convertirTricolor, false);
+document.getElementById("op-TricolorHorizontal").addEventListener('click', convertirTricolorHorizontal, false);
+document.getElementById("op-Marciano").addEventListener('click', convertirMarciano, false);
 document.getElementById("op-gamma").addEventListener('click', correccionGamma, false);
 document.getElementById("op-umbral1").addEventListener('click', umbralizado, false);
 document.getElementById("op-umbral-2-limites").addEventListener('click', umbral2limites, false);
