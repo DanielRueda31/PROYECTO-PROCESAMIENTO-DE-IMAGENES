@@ -161,8 +161,8 @@ export class MathImg {
     var sal = this.initArray(img.getWidth(), img.getHeight());
     let inicio = 0, termino = img.getWidth() / 3;
     console.log(inicio, termino);
-    for (let j = inicio; j < termino; j++)  {
-      for (let i = 0; i < img.getHeight(); i++) {
+    for (let i = inicio; i < termino; i++)  {
+      for (let j = 0; j < img.getHeight(); j++) {
         sal[0][i][j] = 0;
         sal[1][i][j] = arrImage[1][i][j];
         sal[2][i][j] = 0;
@@ -170,8 +170,8 @@ export class MathImg {
     }
     inicio = termino;
     termino = 2 * img.getWidth() / 3;
-    for (let j = inicio; j < termino; j++)  {
-      for (let i = 0; i < img.getHeight(); i++){
+    for (let i = inicio; i < termino; i++)  {
+      for (let j = 0; j < img.getHeight(); j++){
         sal[0][i][j] = arrImage[0][i][j];
         sal[1][i][j] = arrImage[0][i][j];
         sal[2][i][j] = arrImage[0][i][j];
@@ -179,8 +179,8 @@ export class MathImg {
     }
     inicio = termino;
     termino = img.getWidth();
-    for (let j = inicio; j < termino; j++){
-      for (let i = 0; i < img.getHeight(); i++)  {
+    for (let i = inicio; i < termino; i++){
+      for (let j = 0; j < img.getHeight(); j++)  {
         sal[0][i][j] = arrImage[0][i][j];
         sal[1][i][j] = 0;
         sal[2][i][j] = 0;
