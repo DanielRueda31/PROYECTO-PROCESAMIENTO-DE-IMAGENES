@@ -182,19 +182,126 @@ var MathImg = /** @class */ (function () {
         }
         return sal;
     };
-    MathImg.toMarciano = function (img) {
+    MathImg.toGradualTricolor = function (img) {
+        //variable que guarda el arreglo 3d de la imagen de color
+        var arrImage = img.getArrayImg();
+        //variable donde guardamos la salida
+        var sal = this.initArray(img.getWidth(), img.getHeight());
+        var inicio = 0, termino = Math.round(img.getWidth() / 3) - 25;
+        var peso = 1;
+        for (var i = 0; i < img.getHeight(); i++) {
+            for (var j = inicio; j < termino; j++) {
+                sal[0][i][j] = 0;
+                sal[1][i][j] = arrImage[1][i][j];
+                sal[2][i][j] = 0;
+            }
+        }
+        console.log(inicio, termino);
+        inicio = termino;
+        termino += 50;
+        for (var i = 0; i < img.getHeight(); i++) {
+            for (var j = inicio; j < termino; j++) {
+                sal[0][i][j] = Math.round(0 + arrImage[0][i][j] * (1 - peso));
+                sal[1][i][j] = Math.round(arrImage[1][i][j] * peso + arrImage[0][i][j] * (1 - peso));
+                sal[2][i][j] = Math.round(0 + arrImage[0][i][j] * (1 - peso));
+                peso -= 0.02;
+            }
+            peso = 1;
+        }
+        console.log(inicio, termino);
+        inicio = termino;
+        termino = Math.round(2 * img.getWidth() / 3) - 25;
+        for (var i = 0; i < img.getHeight(); i++) {
+            for (var j = inicio; j < termino; j++) {
+                sal[0][i][j] = arrImage[0][i][j];
+                sal[1][i][j] = arrImage[0][i][j];
+                sal[2][i][j] = arrImage[0][i][j];
+            }
+        }
+        console.log(inicio, termino);
+        inicio = termino;
+        termino += 50;
+        peso = 1;
+        for (var i = 0; i < img.getHeight(); i++) {
+            for (var j = inicio; j < termino; j++) {
+                sal[0][i][j] = Math.round(arrImage[0][i][j] * (peso) + arrImage[0][i][j] * (1 - peso));
+                sal[1][i][j] = Math.round(arrImage[0][i][j] * (peso) + 0);
+                sal[2][i][j] = Math.round(arrImage[0][i][j] * (peso) + 0);
+                peso -= 0.02;
+            }
+            peso = 1;
+        }
+        inicio = termino;
+        termino = img.getWidth();
+        for (var i = 0; i < img.getHeight(); i++) {
+            for (var j = inicio; j < termino; j++) {
+                sal[0][i][j] = arrImage[0][i][j];
+                sal[1][i][j] = 0;
+                sal[2][i][j] = 0;
+            }
+        }
+        return sal;
+    };
+    MathImg.toMartianEffect = function (img) {
         //variable que guarda el arreglo 3d de la imagen de color
         var arrImage = img.getArrayImg();
         //variable donde guardamos la salida
         var sal = this.initArray(img.getWidth(), img.getHeight());
         for (var i = 0; i < img.getHeight(); i++) {
             for (var j = 0; j < img.getWidth(); j++) {
-                sal[0][i][j] = 0;
-                sal[1][i][j] = arrImage[1][i][j];
-                sal[2][i][j] = 0;
+                sal[0][i][j] = arrImage[0][i][j];
+                sal[1][i][j] = arrImage[1][i][j] * 0.5;
+                sal[2][i][j] = arrImage[2][i][j] * 0.5;
             }
         }
         return sal;
+    };
+    MathImg.toluster = function (img, umbral) {
+        //variable que guarda el arreglo 3d de la imagen de color
+        var arrImage = img.getArrayImg();
+        //variable donde guardamos la salida
+        var sal = this.initArray(img.getWidth(), img.getHeight());
+        var prom;
+        for (var i = 0; i < img.getHeight(); i++) {
+            for (var j = 0; j < img.getWidth(); j++) {
+                prom = (0.299 * arrImage[0][i][j] + 0.587 * arrImage[1][i][j] + 0.114 * arrImage[2][i][j]);
+                if (prom > umbral) {
+                    sal[0][i][j] = prom;
+                    sal[1][i][j] = prom;
+                    sal[2][i][j] = prom;
+                }
+            }
+        }
+        return sal;
+    };
+    MathImg.realcedefido = function (img, porcion, factor) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var salida = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var c = 0; c < 3; c++) {
+                    var sum = 0;
+                    var a = 0;
+                    for (var m = -porcion; m <= porcion; m++) {
+                        for (var n = -porcion; n <= porcion; n++) {
+                            var x = j + n;
+                            var y = i + m;
+                            if (x >= 0 && x < width && y >= 0 && y < height) {
+                                sum += arrImage[c][y][x];
+                                a++;
+                            }
+                        }
+                    }
+                    var promedio = sum / a;
+                    var contraste = arrImage[c][i][j] - promedio;
+                    salida[c][i][j] = arrImage[c][i][j] + factor * contraste;
+                    salida[c][i][j] = Math.min(255, Math.max(0, salida[c][i][j]));
+                }
+            }
+        }
+        return salida;
     };
     // hasta aqui
     MathImg.correctionGamma = function (img, factores) {
@@ -228,9 +335,6 @@ var MathImg = /** @class */ (function () {
                     sal[1][i][j] = arrImage[1][i][j];
                     sal[2][i][j] = arrImage[2][i][j];
                 }
-                /*sal[0][i][j] = prom > umbral ? 255 : 0;
-                sal[1][i][j] = sal[0][i][j];
-                sal[2][i][j] = sal[0][i][j];*/
             }
         }
         return sal;

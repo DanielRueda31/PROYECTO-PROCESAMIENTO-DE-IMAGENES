@@ -71,11 +71,33 @@ function convertirTricolorHorizontal(evt: any): void{
   var imagenSal:ImageType = new ImageType(pantalla1, imgLocal.getImage());
   imagenSal.imageArray2DtoData(pantalla2, MathImg.toTricolorHorizontal(imagenSal));
 }
-
-function convertirMarciano(evt: any): void{
+function convertirTricolorGradual(evt: any): void{
   var imagenSal:ImageType = new ImageType(pantalla1, imgLocal.getImage());
-  imagenSal.imageArray2DtoData(pantalla2, MathImg.toMarciano(imagenSal));
+  imagenSal.imageArray2DtoData(pantalla2, MathImg.toGradualTricolor(imagenSal));
 }
+
+
+function convertirEfectoMarciano(evt: any): void{
+  var imagenSal:ImageType = new ImageType(pantalla1, imgLocal.getImage());
+  imagenSal.imageArray2DtoData(pantalla2, MathImg.toMartianEffect(imagenSal));
+}
+
+function realce(evt: any): void{
+  var args = prompt('Ingresa el valor del realce');
+  var umbral = parseFloat(args);
+  var imagenSal:ImageType = new ImageType(pantalla1, imgLocal.getImage());
+  imagenSal.imageArray2DtoData(pantalla2, MathImg.toluster(imagenSal, umbral));
+}
+
+function realcedef(evt: any): void {
+  var args = prompt('Ingresa el valor separados por comas ejemplo: "5, 8")');
+    var parametros = args.split(',').map(elem => parseFloat(elem));
+    var porcion = parametros[0];
+    var factor = parametros[1];
+    var imagenSal: ImageType = new ImageType(pantalla1, imgLocal.getImage());
+    imagenSal.imageArray2DtoData(pantalla2, MathImg.realcedefido(imagenSal, porcion, factor));
+}
+
 ///nuevo codigo
 function correccionGamma(evt: any): void{
   var args = prompt('Ingresa los factores de correccion Gamma, separados por coma');
@@ -83,6 +105,7 @@ function correccionGamma(evt: any): void{
   var imagenSal:ImageType = new ImageType(pantalla1, imgLocal.getImage());
   imagenSal.imageArray2DtoData(pantalla2, MathImg.correctionGamma(imagenSal, factores));
 }
+
 function umbralizado(evt: any): void{
   var args = prompt('Ingresa el valor del umbral');
   var umbral = parseFloat(args);
@@ -450,7 +473,10 @@ document.getElementById("op-verde").addEventListener('click', convertirAVerde, f
 document.getElementById("op-azul").addEventListener('click', convertirAAzul, false);
 document.getElementById("op-tricolor").addEventListener('click', convertirTricolor, false);
 document.getElementById("op-TricolorHorizontal").addEventListener('click', convertirTricolorHorizontal, false);
-document.getElementById("op-Marciano").addEventListener('click', convertirMarciano, false);
+document.getElementById("op-tricolorGradual").addEventListener('click', convertirTricolorGradual, false);
+document.getElementById("op-realce").addEventListener('click', realce, false);
+document.getElementById("op-realcedefinido").addEventListener('click', realcedef, false);
+document.getElementById("op-marciano").addEventListener('click', convertirEfectoMarciano, false);
 document.getElementById("op-gamma").addEventListener('click', correccionGamma, false);
 document.getElementById("op-umbral1").addEventListener('click', umbralizado, false);
 document.getElementById("op-umbral-2-limites").addEventListener('click', umbral2limites, false);
