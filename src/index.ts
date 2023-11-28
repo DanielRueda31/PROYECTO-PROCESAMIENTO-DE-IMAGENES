@@ -8,9 +8,11 @@ import { CanvasLocal } from './canvasLocal.js';
 
 let lienzo1: HTMLCanvasElement;
 let lienzo2: HTMLCanvasElement;
+let lienzo3: HTMLCanvasElement;
 let lienzo4: HTMLCanvasElement;
 let pantalla1: CanvasRenderingContext2D;
 let pantalla2: CanvasRenderingContext2D;
+let pantalla3: CanvasRenderingContext2D;
 let pantalla4: CanvasRenderingContext2D;
 
 /* Este evento controla la forma de abrir un archivo mediante el evento de arrastrar y soltar */
@@ -27,6 +29,8 @@ lienzo1 = <HTMLCanvasElement>document.getElementById('img1');
 pantalla1 = lienzo1.getContext("2d");
 lienzo2 = <HTMLCanvasElement>document.getElementById('img2');
 pantalla2 = lienzo2.getContext("2d");
+lienzo3 = <HTMLCanvasElement>document.getElementById('img3');
+pantalla3 = lienzo3.getContext("2d");
 lienzo4 = <HTMLCanvasElement>document.getElementById('img4');
 pantalla4 = lienzo4.getContext("2d");
 
@@ -98,6 +102,31 @@ function realcedef(evt: any): void {
     imagenSal.imageArray2DtoData(pantalla2, MathImg.realcedefido(imagenSal, porcion, factor));
 }
 
+
+
+function vren(evt: any): void{
+  var args = prompt('Ingresa el renglon');
+  var r = parseFloat(args);
+  const imagenSal: ImageType = new ImageType(pantalla1, imgLocal.getImage());
+  let canvas1: HTMLCanvasElement = lienzo3;
+  let graphics1: CanvasRenderingContext2D = pantalla3;
+
+  let hist = MathImg.ren(imagenSal, r);
+  const miCanvas1:CanvasLocal = new CanvasLocal(graphics1, canvas1, hist);
+  miCanvas1.paint();
+}
+function vcol(evt: any): void{
+  var args = prompt('Ingresa el columna');
+  var r = parseFloat(args);
+  const imagenSal: ImageType = new ImageType(pantalla1, imgLocal.getImage());
+  let canvas1: HTMLCanvasElement = lienzo3;
+  let graphics1: CanvasRenderingContext2D = pantalla3;
+
+  let hist = MathImg.col(imagenSal, r);
+  const miCanvas1:CanvasLocal = new CanvasLocal(graphics1, canvas1, hist);
+  miCanvas1.paint();
+}
+
 ///nuevo codigo
 function correccionGamma(evt: any): void{
   var args = prompt('Ingresa los factores de correccion Gamma, separados por coma');
@@ -136,6 +165,8 @@ function umbral2limites(evt: any): void{
     var imagenSal:ImageType = new ImageType(pantalla1, imgLocal.getImage());
     imagenSal.imageArray2DtoData(pantalla2, MathImg.toUmbral2limites(imagenSal, rangos));
 }
+
+
 function changeBrightness(evt: any): void {
     var factor = prompt ("Ingresa un valor en el rango de 0-2, como un porcentaje");
     var imagenSal:ImageType = new ImageType(pantalla1, imgLocal.getImage());
@@ -363,7 +394,6 @@ function ecualizado(evt: any): void{
   imagenSal.imageArray2DtoData(pantalla2, MathImg.ecualizar(imagenSal));
 } 
 
-
 function erosionarImg(evt: any): void{
   var imagenSal:ImageType = new ImageType(pantalla1, imgLocal.getImage());
   imagenSal.imageArray2DtoData(pantalla2, MathImg.erosionar(imagenSal, true));
@@ -477,6 +507,12 @@ document.getElementById("op-tricolorGradual").addEventListener('click', converti
 document.getElementById("op-realce").addEventListener('click', realce, false);
 document.getElementById("op-realcedefinido").addEventListener('click', realcedef, false);
 document.getElementById("op-marciano").addEventListener('click', convertirEfectoMarciano, false);
+document.getElementById("op-vren").addEventListener('click', vren, false);
+document.getElementById("op-vcol").addEventListener('click', vcol, false);
+
+//document.getElementById("op-vcol").addEventListener('click', vcol, false);
+
+
 document.getElementById("op-gamma").addEventListener('click', correccionGamma, false);
 document.getElementById("op-umbral1").addEventListener('click', umbralizado, false);
 document.getElementById("op-umbral-2-limites").addEventListener('click', umbral2limites, false);

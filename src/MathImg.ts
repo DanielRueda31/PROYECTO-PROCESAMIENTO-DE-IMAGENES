@@ -316,6 +316,47 @@ const contraste = arrImage[c][i][j] - promedio;
   }
 
 
+
+  public static ren(img: ImageType, r: number): number[][] {
+    //variable que guarda el arreglo 3d de la imagen de color
+    var arrImage = img.getArrayImg();
+    //variable donde guardamos la salida
+    var sal = new Array(3);
+    sal[0] = new Array(img.getWidth());
+    sal[1] = new Array(img.getWidth());
+    sal[2] = new Array(img.getWidth());
+
+      for (let j = 0; j < img.getWidth(); j++) {
+        //console.log(arrImage[0][i][j], i,j )
+        sal[0][j]=arrImage[0][r][j];
+        sal[1][j]=arrImage[1][r][j];
+        sal[2][j]=arrImage[2][r][j];
+      }
+
+    //console.log(sal[0])
+    return sal;
+  }
+
+  public static col(img: ImageType, r: number): number[][] {
+    //variable que guarda el arreglo 3d de la imagen de color
+    var arrImage = img.getArrayImg();
+    //variable donde guardamos la salida
+    var sal = new Array(3);
+    sal[0] = new Array(img.getHeight());
+    sal[1] = new Array(img.getHeight());
+    sal[2] = new Array(img.getHeight());
+
+      for (let j = 0; j < img.getHeight(); j++) {
+        //console.log(arrImage[0][i][j], i,j )
+        sal[0][j]=arrImage[0][j][r];
+        sal[1][j]=arrImage[1][j][r];
+        sal[2][j]=arrImage[2][j][r];
+      }
+
+    //console.log(sal[0])
+    return sal;
+  }
+
 // hasta aqui
 
 
@@ -484,6 +525,9 @@ public static correctionGamma(img: ImageType, factores: number[]): number[][][] 
     }
     return sal;
   }
+
+
+
   public static cambioFTransferencia(img: ImageType, factores: number[]): number[][][] {
     var arrImage: number[][][] = img.getArrayImg();
     factores.unshift(0, 0);

@@ -6,9 +6,11 @@ import { ParticleText } from "./particle.js";
 import { CanvasLocal } from './canvasLocal.js';
 var lienzo1;
 var lienzo2;
+var lienzo3;
 var lienzo4;
 var pantalla1;
 var pantalla2;
+var pantalla3;
 var pantalla4;
 /* Este evento controla la forma de abrir un archivo mediante el evento de arrastrar y soltar */
 function handleDragOver(evt) {
@@ -23,6 +25,8 @@ lienzo1 = document.getElementById('img1');
 pantalla1 = lienzo1.getContext("2d");
 lienzo2 = document.getElementById('img2');
 pantalla2 = lienzo2.getContext("2d");
+lienzo3 = document.getElementById('img3');
+pantalla3 = lienzo3.getContext("2d");
 lienzo4 = document.getElementById('img4');
 pantalla4 = lienzo4.getContext("2d");
 var dropZone = lienzo1; //document.getElementById('img1');
@@ -86,6 +90,26 @@ function realcedef(evt) {
     var factor = parametros[1];
     var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
     imagenSal.imageArray2DtoData(pantalla2, MathImg.realcedefido(imagenSal, porcion, factor));
+}
+function vren(evt) {
+    var args = prompt('Ingresa el renglon');
+    var r = parseFloat(args);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    var canvas1 = lienzo3;
+    var graphics1 = pantalla3;
+    var hist = MathImg.ren(imagenSal, r);
+    var miCanvas1 = new CanvasLocal(graphics1, canvas1, hist);
+    miCanvas1.paint();
+}
+function vcol(evt) {
+    var args = prompt('Ingresa el columna');
+    var r = parseFloat(args);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    var canvas1 = lienzo3;
+    var graphics1 = pantalla3;
+    var hist = MathImg.col(imagenSal, r);
+    var miCanvas1 = new CanvasLocal(graphics1, canvas1, hist);
+    miCanvas1.paint();
 }
 ///nuevo codigo
 function correccionGamma(evt) {
@@ -434,6 +458,9 @@ document.getElementById("op-tricolorGradual").addEventListener('click', converti
 document.getElementById("op-realce").addEventListener('click', realce, false);
 document.getElementById("op-realcedefinido").addEventListener('click', realcedef, false);
 document.getElementById("op-marciano").addEventListener('click', convertirEfectoMarciano, false);
+document.getElementById("op-vren").addEventListener('click', vren, false);
+document.getElementById("op-vcol").addEventListener('click', vcol, false);
+//document.getElementById("op-vcol").addEventListener('click', vcol, false);
 document.getElementById("op-gamma").addEventListener('click', correccionGamma, false);
 document.getElementById("op-umbral1").addEventListener('click', umbralizado, false);
 document.getElementById("op-umbral-2-limites").addEventListener('click', umbral2limites, false);

@@ -303,6 +303,40 @@ var MathImg = /** @class */ (function () {
         }
         return salida;
     };
+    MathImg.ren = function (img, r) {
+        //variable que guarda el arreglo 3d de la imagen de color
+        var arrImage = img.getArrayImg();
+        //variable donde guardamos la salida
+        var sal = new Array(3);
+        sal[0] = new Array(img.getWidth());
+        sal[1] = new Array(img.getWidth());
+        sal[2] = new Array(img.getWidth());
+        for (var j = 0; j < img.getWidth(); j++) {
+            //console.log(arrImage[0][i][j], i,j )
+            sal[0][j] = arrImage[0][r][j];
+            sal[1][j] = arrImage[1][r][j];
+            sal[2][j] = arrImage[2][r][j];
+        }
+        //console.log(sal[0])
+        return sal;
+    };
+    MathImg.col = function (img, r) {
+        //variable que guarda el arreglo 3d de la imagen de color
+        var arrImage = img.getArrayImg();
+        //variable donde guardamos la salida
+        var sal = new Array(3);
+        sal[0] = new Array(img.getHeight());
+        sal[1] = new Array(img.getHeight());
+        sal[2] = new Array(img.getHeight());
+        for (var j = 0; j < img.getHeight(); j++) {
+            //console.log(arrImage[0][i][j], i,j )
+            sal[0][j] = arrImage[0][j][r];
+            sal[1][j] = arrImage[1][j][r];
+            sal[2][j] = arrImage[2][j][r];
+        }
+        //console.log(sal[0])
+        return sal;
+    };
     // hasta aqui
     MathImg.correctionGamma = function (img, factores) {
         //variable que guarda el arreglo 3d de la imagen de color
