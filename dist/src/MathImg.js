@@ -256,6 +256,342 @@ var MathImg = /** @class */ (function () {
         }
         return sal;
     };
+    //FIESTA
+    MathImg.applyColorEffect = function (img, color) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var colorEffect = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                // Aplicar el color a cada canal RGB
+                for (var c = 0; c < 3; c++) {
+                    colorEffect[c][i][j] = arrImage[c][i][j] + color[c];
+                    //   valores  en el rango [0, 255]
+                    colorEffect[c][i][j] = Math.max(0, Math.min(255, colorEffect[c][i][j]));
+                }
+            }
+        }
+        return colorEffect;
+    };
+    //MOVIMIENTO
+    MathImg.applyShiftEffect = function (img, offsetX, offsetY) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var shiftedImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var c = 0; c < 3; c++) {
+                    // Calcula la nueva posición aplicando el desplazamiento
+                    var newI = (i + offsetY + height) % height;
+                    var newJ = (j + offsetX + width) % width;
+                    shiftedImage[c][i][j] = arrImage[c][newI][newJ];
+                }
+            }
+        }
+        return shiftedImage;
+    };
+    //BURBUJAS
+    MathImg.createBubblesEffect = function (width, height, bubbles) {
+        var bubbleImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var _i = 0, bubbles_1 = bubbles; _i < bubbles_1.length; _i++) {
+                    var bubble = bubbles_1[_i];
+                    var distance = Math.sqrt(Math.pow((i - bubble.y), 2) + Math.pow((j - bubble.x), 2));
+                    if (distance < bubble.radius) {
+                        bubbleImage[0][i][j] = 255; // R
+                        bubbleImage[1][i][j] = 255; // G
+                        bubbleImage[2][i][j] = 255; // B
+                    }
+                }
+            }
+        }
+        return bubbleImage;
+    };
+    //ROTACION
+    MathImg.applyRotationEffect = function (img, angle) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var rotatedImage = this.initArray(width, height);
+        var centerX = width / 2;
+        var centerY = height / 2;
+        var radians = (angle * Math.PI) / 180;
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                var x = j - centerX;
+                var y = i - centerY;
+                var newX = Math.cos(radians) * x - Math.sin(radians) * y + centerX;
+                var newY = Math.sin(radians) * x + Math.cos(radians) * y + centerY;
+                if (newX >= 0 && newX < width && newY >= 0 && newY < height) {
+                    for (var c = 0; c < 3; c++) {
+                        rotatedImage[c][i][j] = arrImage[c][Math.floor(newY)][Math.floor(newX)];
+                    }
+                }
+            }
+        }
+        return rotatedImage;
+    };
+    //ESPEJO//
+    MathImg.applyMirrorEffect = function (img, offsetX) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var mirroredImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var c = 0; c < 3; c++) {
+                    var mirroredX = (j + offsetX) % (2 * width);
+                    var reflectedX = mirroredX >= width ? 2 * width - mirroredX - 1 : mirroredX;
+                    mirroredImage[c][i][j] = arrImage[c][i][reflectedX];
+                }
+            }
+        }
+        return mirroredImage;
+    };
+    ///agua//
+    MathImg.applyWaterEffect = function (image, time) {
+        var arrImage = image.getArrayImg();
+        var width = image.getWidth();
+        var height = image.getHeight();
+        var waterImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var c = 0; c < 3; c++) {
+                    var offset = 5 * Math.sin((i / 10) + time / 50) + 5 * Math.sin((j / 10) + time / 50);
+                    var newX = Math.floor(j + offset);
+                    var newY = Math.floor(i + offset);
+                    var clampedX = Math.max(0, Math.min(width - 1, newX));
+                    var clampedY = Math.max(0, Math.min(height - 1, newY));
+                    waterImage[c][i][j] = arrImage[c][clampedY][clampedX];
+                }
+            }
+        }
+        return waterImage;
+    };
+    //Mariposas
+    MathImg.createButterfliesEffect = function (width, height, butterflies) {
+        // Inicializar un array de imagen
+        var butterfliesImage = this.initArray(width, height);
+        // Dibujar cada mariposa en el array de imagen
+        for (var _i = 0, butterflies_1 = butterflies; _i < butterflies_1.length; _i++) {
+            var butterfly = butterflies_1[_i];
+            this.drawButterfly(butterfly, butterfliesImage);
+        }
+        return butterfliesImage;
+    };
+    // Función para dibujar una mariposa en el array de imagen
+    MathImg.drawButterfly = function (butterfly, imageArray) {
+        var x = Math.round(butterfly.x);
+        var y = Math.round(butterfly.y);
+        var size = Math.round(butterfly.size);
+        // Verificar que la mariposa esté dentro del área de la imagen
+        if (x < 0 || x + size >= imageArray[0].length || y < 0 || y + size >= imageArray.length) {
+            return;
+        }
+        for (var i = 0; i < size; i++) {
+            for (var j = 0; j < size; j++) {
+                // Asignar un valor específico para indicar la presencia de una mariposa
+                imageArray[0][y + i][x + j] = 255; // R
+                imageArray[1][y + i][x + j] = 255; // G
+                imageArray[2][y + i][x + j] = 255; // B
+            }
+        }
+    };
+    //ANIME
+    MathImg.applyAnimeEffect = function (img) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var animeImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                // Obtener valores de los canales de color
+                var red = arrImage[0][i][j];
+                var green = arrImage[1][i][j];
+                var blue = arrImage[2][i][j];
+                // Ajustar los valores para obtener un aspecto de anime
+                var animeRed = Math.min(255, red * 1.5);
+                var animeGreen = Math.min(255, green * 1.5);
+                var animeBlue = Math.min(255, blue * 1.5);
+                // Asignar valores al nuevo array de imagen
+                animeImage[0][i][j] = animeRed;
+                animeImage[1][i][j] = animeGreen;
+                animeImage[2][i][j] = animeBlue;
+            }
+        }
+        return animeImage;
+    };
+    ////GLICHT
+    MathImg.applyGlitchEffect = function (img) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var glitchedImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var c = 0; c < 3; c++) {
+                    var randomOffset = Math.floor(Math.random() * 10) - 5;
+                    var glitchedX = j + randomOffset;
+                    if (glitchedX >= 0 && glitchedX < width) {
+                        glitchedImage[c][i][j] = arrImage[c][i][glitchedX];
+                    }
+                }
+            }
+        }
+        return glitchedImage;
+    };
+    ////thanos///
+    MathImg.applyThanosSnapEffect = function (img) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var snappedImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                if (Math.random() > 0.5) {
+                    for (var c = 0; c < 3; c++) {
+                        snappedImage[c][i][j] = 255; // Píxel blanco para el efecto de desvanecimiento
+                    }
+                }
+                else {
+                    for (var c = 0; c < 3; c++) {
+                        snappedImage[c][i][j] = arrImage[c][i][j];
+                    }
+                }
+            }
+        }
+        return snappedImage;
+    };
+    ///MATRIX//
+    MathImg.applyMatrixEffect = function (img) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var matrixImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var c = 0; c < 3; c++) {
+                    // Generar un efecto de números aleatorios en verde 
+                    matrixImage[c][i][j] = Math.random() > 0.9 ? 255 : 0;
+                }
+            }
+        }
+        return matrixImage;
+    };
+    ///batman//
+    MathImg.applyBatmanEffect = function (img) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var batmanImage = this.initArray(width, height);
+        // Definir las coordenadas del centro del murciélago
+        var batmanCenterX = Math.floor(width / 2);
+        var batmanCenterY = Math.floor(height / 2);
+        // Tamaño del murciélago
+        var batmanSize = Math.min(Math.floor(width / 2), Math.floor(height / 2));
+        // Obtener la imagen del murciélago 
+        var batmanData = [
+            [0, 0, 0, 0, 255, 255, 0, 0, 0, 0],
+            [0, 0, 0, 255, 255, 255, 255, 0, 0, 0],
+            [0, 0, 255, 255, 255, 255, 255, 255, 0, 0],
+            [0, 255, 255, 255, 255, 255, 255, 255, 255, 0],
+            [255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+            [255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+            [0, 0, 255, 0, 255, 255, 0, 255, 0, 0],
+            [0, 255, 0, 0, 255, 255, 0, 0, 255, 0],
+            [0, 0, 0, 255, 0, 0, 255, 0, 0, 0],
+            [0, 0, 0, 0, 255, 255, 0, 0, 0, 0],
+        ];
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var c = 0; c < 3; c++) {
+                    // Calcular las coordenadas relativas en la imagen del murciélago
+                    var batmanX = j - batmanCenterX + batmanSize / 2;
+                    var batmanY = i - batmanCenterY + batmanSize / 2;
+                    // Verificar si estamos dentro del área del murciélago
+                    if (batmanX >= 0 &&
+                        batmanX < batmanSize &&
+                        batmanY >= 0 &&
+                        batmanY < batmanSize &&
+                        batmanData[Math.floor((batmanY / batmanSize) * 8)][Math.floor((batmanX / batmanSize) * 8)] === 255) {
+                        // Asignar un valor específico para indicar la presencia del murciélago (en este caso, negro)
+                        batmanImage[c][i][j] = 0; // R, G, B
+                    }
+                    else {
+                        // Copiar el valor original si no estamos en el murciélago
+                        batmanImage[c][i][j] = arrImage[c][i][j];
+                    }
+                }
+            }
+        }
+        return batmanImage;
+    };
+    MathImg.applyParallaxEffect = function (img, offsetX, offsetY) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var parallaxImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var c = 0; c < 3; c++) {
+                    var shiftedX = (j + offsetX * (i / height)) % width;
+                    var shiftedY = (i + offsetY * (j / width)) % height;
+                    parallaxImage[c][i][j] = arrImage[c][Math.floor(shiftedY)][Math.floor(shiftedX)];
+                }
+            }
+        }
+        return parallaxImage;
+    };
+    //VORTICE//
+    MathImg.applyVortexEffect = function (img, centerX, centerY) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var vortexedImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var c = 0; c < 3; c++) {
+                    // Calcula las coordenadas polares relativas al centro del vórtice
+                    var deltaX = j - centerX;
+                    var deltaY = i - centerY;
+                    var radius = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                    var angle = Math.atan2(deltaY, deltaX);
+                    // Aplica el efecto de vórtice
+                    var vortexRadius = Math.sqrt(radius);
+                    var vortexX = Math.round(centerX + vortexRadius * Math.cos(angle));
+                    var vortexY = Math.round(centerY + vortexRadius * Math.sin(angle));
+                    // Verifica si las coordenadas están dentro de la imagen
+                    if (vortexX >= 0 && vortexX < width && vortexY >= 0 && vortexY < height) {
+                        vortexedImage[c][i][j] = arrImage[c][vortexY][vortexX];
+                    }
+                }
+            }
+        }
+        return vortexedImage;
+    };
+    //cielo estrellado//
+    MathImg.applyStarfieldEffect = function (img) {
+        var width = img._width;
+        var height = img._height;
+        var starfieldImage = this.initArray(width, height);
+        var starDensity = 0.02; // Densidad de estrellas, ajusta según sea necesario
+        var starColor = 255; // Color de las estrellas, ajusta según sea necesario
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                // Generar estrellas de manera aleatoria
+                if (Math.random() < starDensity) {
+                    // Asignar el color de la estrella
+                    for (var c = 0; c < 3; c++) {
+                        starfieldImage[c][i][j] = starColor;
+                    }
+                }
+            }
+        }
+        return starfieldImage;
+    };
     MathImg.toluster = function (img, umbral) {
         //variable que guarda el arreglo 3d de la imagen de color
         var arrImage = img.getArrayImg();

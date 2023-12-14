@@ -1,6 +1,7 @@
 
 import { ImageType } from "./ImageType.js";
-
+import { Bubble } from "./index.js";
+import { Butterfly } from "./index.js";
 export class MathImg {
 
   public static initArray(width: number, height: number): any {
@@ -265,6 +266,453 @@ export class MathImg {
     }
     return sal;
   }
+//FIESTA
+  public static applyColorEffect(img: ImageType, color: number[]): number[][][] {
+    const arrImage = img.getArrayImg();
+    const width = img.getWidth();
+    const height = img.getHeight();
+
+    const colorEffect = this.initArray(width, height);
+
+    for (let i = 0; i < height; i++) {
+        for (let j = 0; j < width; j++) {
+            // Aplicar el color a cada canal RGB
+            for (let c = 0; c < 3; c++) {
+                colorEffect[c][i][j] = arrImage[c][i][j] + color[c];
+                //   valores  en el rango [0, 255]
+                colorEffect[c][i][j] = Math.max(0, Math.min(255, colorEffect[c][i][j]));
+            }
+        }
+    }
+
+    return colorEffect;
+}
+
+//MOVIMIENTO
+public static applyShiftEffect(img: ImageType, offsetX: number, offsetY: number): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const shiftedImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+          for (let c = 0; c < 3; c++) {
+              // Calcula la nueva posición aplicando el desplazamiento
+              const newI = (i + offsetY + height) % height;
+              const newJ = (j + offsetX + width) % width;
+
+              shiftedImage[c][i][j] = arrImage[c][newI][newJ];
+          }
+      }
+  }
+
+  return shiftedImage;
+} 
+
+//BURBUJAS
+public static createBubblesEffect(width: number, height: number, bubbles: Bubble[]): number[][][] {
+  const bubbleImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+          for (const bubble of bubbles) {
+              const distance = Math.sqrt((i - bubble.y) ** 2 + (j - bubble.x) ** 2);
+
+              if (distance < bubble.radius) {
+                  bubbleImage[0][i][j] = 255; // R
+                  bubbleImage[1][i][j] = 255; // G
+                  bubbleImage[2][i][j] = 255; // B
+              }
+          }
+      }
+  }
+
+  return bubbleImage;
+}
+//ROTACION
+public static applyRotationEffect(img: ImageType, angle: number): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const rotatedImage = this.initArray(width, height);
+
+  const centerX = width / 2;
+  const centerY = height / 2;
+
+  const radians = (angle * Math.PI) / 180;
+
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      const x = j - centerX;
+      const y = i - centerY;
+
+      const newX = Math.cos(radians) * x - Math.sin(radians) * y + centerX;
+      const newY = Math.sin(radians) * x + Math.cos(radians) * y + centerY;
+
+      if (newX >= 0 && newX < width && newY >= 0 && newY < height) {
+        for (let c = 0; c < 3; c++) {
+          rotatedImage[c][i][j] = arrImage[c][Math.floor(newY)][Math.floor(newX)];
+        }
+      }
+    }
+  }
+
+  return rotatedImage;
+}
+
+
+//ESPEJO//
+public static applyMirrorEffect(img: ImageType, offsetX: number): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const mirroredImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+          for (let c = 0; c < 3; c++) {
+              const mirroredX = (j + offsetX) % (2 * width);
+              const reflectedX = mirroredX >= width ? 2 * width - mirroredX - 1 : mirroredX;
+              mirroredImage[c][i][j] = arrImage[c][i][reflectedX];
+          }
+      }
+  }
+
+  return mirroredImage;
+}
+
+
+///agua//
+public static applyWaterEffect(image: ImageType, time: number): number[][][] {
+  const arrImage = image.getArrayImg();
+  const width = image.getWidth();
+  const height = image.getHeight();
+
+  const waterImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      for (let c = 0; c < 3; c++) {
+        const offset = 5 * Math.sin((i / 10) + time / 50) + 5 * Math.sin((j / 10) + time / 50);
+        const newX = Math.floor(j + offset);
+        const newY = Math.floor(i + offset);
+
+        const clampedX = Math.max(0, Math.min(width - 1, newX));
+        const clampedY = Math.max(0, Math.min(height - 1, newY));
+
+        waterImage[c][i][j] = arrImage[c][clampedY][clampedX];
+      }
+    }
+  }
+
+  return waterImage;
+}
+
+//Mariposas
+public static createButterfliesEffect(width: number, height: number, butterflies: Butterfly[]): number[][][] {
+  // Inicializar un array de imagen
+  const butterfliesImage = this.initArray(width, height);
+
+  // Dibujar cada mariposa en el array de imagen
+  for (const butterfly of butterflies) {
+    this.drawButterfly(butterfly, butterfliesImage);
+  }
+
+  return butterfliesImage;
+}
+
+// Función para dibujar una mariposa en el array de imagen
+private static drawButterfly(butterfly: Butterfly, imageArray: number[][][]): void {
+  const x = Math.round(butterfly.x);
+  const y = Math.round(butterfly.y);
+  const size = Math.round(butterfly.size);
+
+  // Verificar que la mariposa esté dentro del área de la imagen
+  if (x < 0 || x + size >= imageArray[0].length || y < 0 || y + size >= imageArray.length) {
+    return;
+  }
+
+  for (let i = 0; i < size; i++) {
+    for (let j = 0; j < size; j++) {
+      // Asignar un valor específico para indicar la presencia de una mariposa
+      imageArray[0][y + i][x + j] = 255; // R
+      imageArray[1][y + i][x + j] = 255; // G
+      imageArray[2][y + i][x + j] = 255; // B
+    }
+  }
+}
+
+
+//ANIME
+public static applyAnimeEffect(img: ImageType): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const animeImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+          // Obtener valores de los canales de color
+          const red = arrImage[0][i][j];
+          const green = arrImage[1][i][j];
+          const blue = arrImage[2][i][j];
+
+          // Ajustar los valores para obtener un aspecto de anime
+          const animeRed = Math.min(255, red * 1.5);
+          const animeGreen = Math.min(255, green * 1.5);
+          const animeBlue = Math.min(255, blue * 1.5);
+
+          // Asignar valores al nuevo array de imagen
+          animeImage[0][i][j] = animeRed;
+          animeImage[1][i][j] = animeGreen;
+          animeImage[2][i][j] = animeBlue;
+      }
+  }
+
+  return animeImage;
+}
+
+
+////GLICHT
+public static applyGlitchEffect(img: ImageType): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const glitchedImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+          for (let c = 0; c < 3; c++) {
+              const randomOffset = Math.floor(Math.random() * 10) - 5;
+              const glitchedX = j + randomOffset;
+
+              if (glitchedX >= 0 && glitchedX < width) {
+                  glitchedImage[c][i][j] = arrImage[c][i][glitchedX];
+              }
+          }
+      }
+  }
+
+  return glitchedImage;
+}
+
+
+////thanos///
+public static applyThanosSnapEffect(img: ImageType): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const snappedImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+      for (let j = 0; j < width; j++) {
+          if (Math.random() > 0.5) {
+              for (let c = 0; c < 3; c++) {
+                  snappedImage[c][i][j] = 255; // Píxel blanco para el efecto de desvanecimiento
+              }
+          } else {
+              for (let c = 0; c < 3; c++) {
+                  snappedImage[c][i][j] = arrImage[c][i][j];
+              }
+          }
+      }
+  }
+
+  return snappedImage;
+}
+
+///MATRIX//
+public static applyMatrixEffect(img: ImageType): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const matrixImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      for (let c = 0; c < 3; c++) {
+        // Generar un efecto de números aleatorios en verde 
+        matrixImage[c][i][j] = Math.random() > 0.9 ? 255 : 0;
+      }
+    }
+  }
+
+  return matrixImage;
+}
+///batman//
+public static applyBatmanEffect(img: ImageType): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const batmanImage = this.initArray(width, height);
+
+  // Definir las coordenadas del centro del murciélago
+  const batmanCenterX = Math.floor(width / 2);
+  const batmanCenterY = Math.floor(height / 2);
+
+  // Tamaño del murciélago
+  const batmanSize = Math.min(Math.floor(width / 2), Math.floor(height / 2));
+
+  // Obtener la imagen del murciélago 
+  const batmanData = [
+    [0, 0, 0, 0, 255, 255, 0, 0, 0, 0],
+    [0, 0, 0, 255, 255, 255, 255, 0, 0, 0],
+    [0, 0, 255, 255, 255, 255, 255, 255, 0, 0],
+    [0, 255, 255, 255, 255, 255, 255, 255, 255, 0],
+    [255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+    [255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+    [0, 0, 255, 0, 255, 255, 0, 255, 0, 0],
+    [0, 255, 0, 0, 255, 255, 0, 0, 255, 0],
+    [0, 0, 0, 255, 0, 0, 255, 0, 0, 0],
+    [0, 0, 0, 0, 255, 255, 0, 0, 0, 0],
+  ];
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      for (let c = 0; c < 3; c++) {
+        // Calcular las coordenadas relativas en la imagen del murciélago
+        const batmanX = j - batmanCenterX + batmanSize / 2;
+        const batmanY = i - batmanCenterY + batmanSize / 2;
+
+        // Verificar si estamos dentro del área del murciélago
+        if (
+          batmanX >= 0 &&
+          batmanX < batmanSize &&
+          batmanY >= 0 &&
+          batmanY < batmanSize &&
+          batmanData[Math.floor((batmanY / batmanSize) * 8)][Math.floor((batmanX / batmanSize) * 8)] === 255
+        ) {
+          // Asignar un valor específico para indicar la presencia del murciélago (en este caso, negro)
+          batmanImage[c][i][j] = 0; // R, G, B
+        } else {
+          // Copiar el valor original si no estamos en el murciélago
+          batmanImage[c][i][j] = arrImage[c][i][j];
+        }
+      }
+    }
+  }
+
+  return batmanImage;
+}
+
+public static applyParallaxEffect(img: ImageType, offsetX: number, offsetY: number): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const parallaxImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      for (let c = 0; c < 3; c++) {
+        const shiftedX = (j + offsetX * (i / height)) % width;
+        const shiftedY = (i + offsetY * (j / width)) % height;
+        parallaxImage[c][i][j] = arrImage[c][Math.floor(shiftedY)][Math.floor(shiftedX)];
+      }
+    }
+  }
+
+  return parallaxImage;
+}
+
+
+//VORTICE//
+public static applyVortexEffect(img: ImageType, centerX: number, centerY: number): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const vortexedImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      for (let c = 0; c < 3; c++) {
+        // Calcula las coordenadas polares relativas al centro del vórtice
+        const deltaX = j - centerX;
+        const deltaY = i - centerY;
+        const radius = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const angle = Math.atan2(deltaY, deltaX);
+
+        // Aplica el efecto de vórtice
+        const vortexRadius = Math.sqrt(radius);
+        const vortexX = Math.round(centerX + vortexRadius * Math.cos(angle));
+        const vortexY = Math.round(centerY + vortexRadius * Math.sin(angle));
+
+        // Verifica si las coordenadas están dentro de la imagen
+        if (vortexX >= 0 && vortexX < width && vortexY >= 0 && vortexY < height) {
+          vortexedImage[c][i][j] = arrImage[c][vortexY][vortexX];
+        }
+      }
+    }
+  }
+
+  return vortexedImage;
+}
+
+
+//cielo estrellado//
+
+public static applyStarfieldEffect(img: ImageType): number[][][] {
+  const width = img._width;
+  const height = img._height;
+  const starfieldImage = this.initArray(width, height);
+
+  const starDensity = 0.02; // Densidad de estrellas, ajusta según sea necesario
+  const starColor = 255; // Color de las estrellas, ajusta según sea necesario
+
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      // Generar estrellas de manera aleatoria
+      if (Math.random() < starDensity) {
+        // Asignar el color de la estrella
+        for (let c = 0; c < 3; c++) {
+          starfieldImage[c][i][j] = starColor;
+        }
+      }
+    }
+  }
+
+  return starfieldImage;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   public static toluster(img: ImageType, umbral: number): number[][][] {
     //variable que guarda el arreglo 3d de la imagen de color
@@ -1446,4 +1894,5 @@ public static correctionGamma(img: ImageType, factores: number[]): number[][][] 
   */
     return sal;
   }
+  
 }

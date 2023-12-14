@@ -1,3 +1,4 @@
+var _a, _b, _c;
 import { ImageLocal } from "./ImageLocal.js";
 import { ImageType } from "./ImageType.js";
 import { MathImg } from "./MathImg.js";
@@ -72,6 +73,393 @@ function convertirTricolorHorizontal(evt) {
 function convertirTricolorGradual(evt) {
     var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
     imagenSal.imageArray2DtoData(pantalla2, MathImg.toGradualTricolor(imagenSal));
+}
+//////////fiesta/////////////////
+var colorPalette = [
+    [255, 0, 0],
+    [0, 255, 0],
+    [0, 0, 255],
+    [255, 255, 0],
+    [255, 0, 255],
+    [0, 255, 255] // Cian
+];
+var currentColorIndex = 0;
+function changeColorEffect() {
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    var color = colorPalette[currentColorIndex];
+    // Aplicar el color a la imagen
+    var colorEffect = MathImg.applyColorEffect(imagenSal, color);
+    imagenSal.imageArray2DtoData(pantalla2, colorEffect);
+    // Cambiar al próximo color en la paleta
+    currentColorIndex = (currentColorIndex + 1) % colorPalette.length;
+    // Solicitar la siguiente animación
+    setTimeout(changeColorEffect, 500); // Cambia de color cada medio segundo
+}
+function startColorChange(evt) {
+    init();
+    changeColorEffect();
+}
+/////movimiento//////
+var shiftOffsetX = 0;
+var shiftOffsetY = 0;
+function shiftImageEffect() {
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    var shiftedImage = MathImg.applyShiftEffect(imagenSal, shiftOffsetX, shiftOffsetY);
+    imagenSal.imageArray2DtoData(pantalla2, shiftedImage);
+    // Incrementa los desplazamientos para la próxima animación
+    shiftOffsetX = (shiftOffsetX + 1) % w;
+    shiftOffsetY = (shiftOffsetY + 1) % h;
+    requestAnimationFrame(shiftImageEffect);
+}
+function startShiftEffect(evt) {
+    init();
+    shiftImageEffect();
+}
+///burbujaaaaaaas/////
+var Bubble = /** @class */ (function () {
+    function Bubble(x, y, radius, speedX, speedY) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.speedX = speedX;
+        this.speedY = speedY;
+    }
+    Bubble.prototype.update = function () {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        // Rebote en los bordes 
+        if (this.x - this.radius < 0 || this.x + this.radius > w) {
+            this.speedX = -this.speedX;
+        }
+        if (this.y - this.radius < 0 || this.y + this.radius > h) {
+            this.speedY = -this.speedY;
+        }
+    };
+    Bubble.prototype.draw = function () {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(2, 25, 55, 0.5)';
+        ctx.fill();
+        ctx.closePath();
+    };
+    return Bubble;
+}());
+export { Bubble };
+var numberOfBubbles = 100;
+var bubblesArray = [];
+function initBubbles() {
+    for (var i = 0; i < numberOfBubbles; i++) {
+        var radius = Math.random() * 20 + 5; // Radio aleatorio entre 5 y 25
+        var x = Math.random() * (w - 2 * radius) + radius;
+        var y = Math.random() * (h - 2 * radius) + radius;
+        var speedX = (Math.random() - 0.5) * 4; // Velocidad aleatoria entre -2 y 2
+        var speedY = (Math.random() - 0.5) * 4;
+        var bubble = new Bubble(x, y, radius, speedX, speedY);
+        bubblesArray.push(bubble);
+    }
+}
+function animateBubbles() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    var bubbleImage = MathImg.createBubblesEffect(w, h, bubblesArray);
+    // Dibujar la imagen original
+    ctx.globalAlpha = 0.5; //opacidad
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    ctx.globalAlpha = 1; // Restaurar la opacidad
+    // Aplicar el efecto de burbujas
+    imagenSal.imageArray2DtoData(pantalla2, bubbleImage);
+    for (var i = 0; i < bubblesArray.length; i++) {
+        bubblesArray[i].update();
+        bubblesArray[i].draw();
+    }
+    requestAnimationFrame(animateBubbles);
+}
+function startBubblesEffect(evt) {
+    init();
+    initBubbles();
+    animateBubbles();
+}
+//rotacion////
+var rotationAngle = 0;
+function rotateImageEffect() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    var rotatedImage = MathImg.applyRotationEffect(imagenSal, rotationAngle);
+    imagenSal.imageArray2DtoData(pantalla2, rotatedImage);
+    // Solicitar la siguiente rotación
+    rotationAngle = (rotationAngle + 1) % 360;
+    requestAnimationFrame(rotateImageEffect);
+}
+function startRotationEffect(evt) {
+    init();
+    rotateImageEffect();
+}
+////espejo//
+var mirrorOffsetX = 0;
+function mirrorEffect() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Dibujar la imagen original
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    // Aplicar el efecto espejo
+    var mirroredImage = MathImg.applyMirrorEffect(imagenSal, mirrorOffsetX);
+    imagenSal.imageArray2DtoData(pantalla2, mirroredImage);
+    // Incrementar el desplazamiento para la próxima animación
+    mirrorOffsetX = (mirrorOffsetX + 1) % w;
+    requestAnimationFrame(mirrorEffect);
+}
+function startMirrorEffect(evt) {
+    init();
+    mirrorEffect();
+}
+//AGUA//////
+function startWaterEffect(evt) {
+    // Inicializar la imagen
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Inicializar el tiempo para simular movimiento en las ondas
+    var time = 0;
+    function animateWaterEffect() {
+        // Aplicar el efecto de agua utilizando la función en MathImg
+        var waterImage = MathImg.applyWaterEffect(imagenSal, time);
+        // Mostrar la imagen resultante
+        imagenSal.imageArray2DtoData(pantalla2, waterImage);
+        // Incrementar el tiempo para la próxima animación
+        time++;
+        // Solicitar la siguiente animación
+        requestAnimationFrame(animateWaterEffect);
+    }
+    // Iniciar la animación
+    animateWaterEffect();
+}
+///mariposas///
+var Butterfly = /** @class */ (function () {
+    function Butterfly(x, y, size, speedX, speedY, texture) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.speedX = speedX;
+        this.speedY = speedY;
+        this.texture = texture;
+    }
+    Butterfly.prototype.update = function () {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        // Lógica de rebote en los bordes
+        if (this.x < 0 || this.x + this.size > w) {
+            this.speedX = -this.speedX;
+        }
+        if (this.y < 0 || this.y + this.size > h) {
+            this.speedY = -this.speedY;
+        }
+    };
+    Butterfly.prototype.draw = function (ctx) {
+        ctx.drawImage(this.texture, this.x, this.y, this.size, this.size);
+    };
+    return Butterfly;
+}());
+export { Butterfly };
+// Textura de la mariposa
+var butterflyTexture = new Image();
+butterflyTexture.src = 'mariposa.png';
+// Número de mariposas y array de mariposas
+var numberOfButterflies = 20;
+var butterfliesArray = [];
+// Inicializar mariposas
+function initButterflies() {
+    for (var i = 0; i < numberOfButterflies; i++) {
+        var size = Math.random() * 30 + 20; // Tamaño aleatorio entre 20 y 50
+        var marginX = 50; // Márgenes en el eje X
+        var marginY = 50; // Márgenes en el eje Y
+        var x = Math.random() * (w - size - 2 * marginX) + marginX; // Ajusta el margen en el eje X
+        var y = Math.random() * (h - size - 2 * marginY) + marginY; // Ajusta el margen en el eje Y
+        var speedX = (Math.random() - 0.5) * 2; // Velocidad aleatoria entre -1 y 1
+        var speedY = (Math.random() - 0.5) * 2;
+        var butterfly = new Butterfly(x, y, size, speedX, speedY, butterflyTexture);
+        butterfliesArray.push(butterfly);
+    }
+}
+// Animar mariposas
+function animateButterflies() {
+    ctx.clearRect(0, 0, w, h);
+    for (var i = 0; i < butterfliesArray.length; i++) {
+        butterfliesArray[i].update();
+        butterfliesArray[i].draw(ctx);
+    }
+    requestAnimationFrame(animateButterflies);
+}
+// Función para iniciar el efecto de mariposas
+function startButterfliesEffect(evt) {
+    init();
+    initButterflies();
+    animateButterflies();
+}
+///ANIME////
+function animeEffect() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Dibujar la imagen original
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    // Aplicar el efecto anime
+    var animeImage = MathImg.applyAnimeEffect(imagenSal);
+    imagenSal.imageArray2DtoData(pantalla2, animeImage);
+    requestAnimationFrame(animeEffect);
+}
+function startAnimeEffect(evt) {
+    init();
+    animeEffect();
+}
+///GLICHT//
+var glitchInterval = null;
+function glitchEffect() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Dibujar la imagen original
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    // Aplicar el efecto de Glitch
+    var glitchedImage = MathImg.applyGlitchEffect(imagenSal);
+    imagenSal.imageArray2DtoData(pantalla2, glitchedImage);
+    if (glitchInterval === null) {
+        // Iniciar un intervalo para el efecto de Glitch
+        glitchInterval = setInterval(function () {
+            var glitchedImage = MathImg.applyGlitchEffect(imagenSal);
+            imagenSal.imageArray2DtoData(pantalla2, glitchedImage);
+        }, 100); // Ajusta el tiempo 
+    }
+}
+function stopGlitchEffect() {
+    // Detener el intervalo de Glitch
+    if (glitchInterval !== null) {
+        clearInterval(glitchInterval);
+        glitchInterval = null;
+    }
+}
+///thanos//
+var thanosInterval = null;
+function thanosSnapEffect() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Dibujar la imagen original
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    // Aplicar el efecto de Thanos Snap
+    var snappedImage = MathImg.applyThanosSnapEffect(imagenSal);
+    imagenSal.imageArray2DtoData(pantalla2, snappedImage);
+    // Verificar si han pasado 3 segundos
+    if (Date.now() - startTime >= 3000) {
+        // Después de 3 segundos, hacer que la imagen se vuelva completamente negra
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillRect(0, 0, w, h); // Rellenar el lienzo con un rectángulo negro
+    }
+    else {
+        // Seguir animando hasta que pasen los 3 segundos
+        requestAnimationFrame(thanosSnapEffect);
+    }
+}
+function startThanosSnapEffect(evt) {
+    init();
+    // Iniciar el temporizador de 3 segundos antes de aplicar el efecto
+    thanosInterval = setTimeout(function () {
+        // Guardar el tiempo de inicio
+        startTime = Date.now();
+        thanosSnapEffect();
+    }, 3000);
+}
+// Variable para almacenar el tiempo de inicio
+var startTime = 0;
+///MATRIX//
+var matrixInterval = null;
+function matrixEffect() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Dibujar la imagen original
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    // Aplicar el efecto Matrix
+    var matrixImage = MathImg.applyMatrixEffect(imagenSal);
+    imagenSal.imageArray2DtoData(pantalla2, matrixImage);
+    requestAnimationFrame(matrixEffect);
+}
+function startMatrixEffect(evt) {
+    init();
+    // Iniciar el efecto Matrix
+    matrixInterval = setInterval(function () {
+        matrixEffect();
+    }, 100); // Ajusta la velocidad 
+}
+////BATMAN///
+var batmanInterval = null;
+function batmanEffect() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Dibujar la imagen original
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    // Aplicar el efecto de Batman
+    var batmanImage = MathImg.applyBatmanEffect(imagenSal);
+    imagenSal.imageArray2DtoData(pantalla2, batmanImage);
+    requestAnimationFrame(batmanEffect);
+}
+function startBatmanEffect(evt) {
+    init();
+    batmanEffect();
+}
+///STARPARALLAXEFFECT//
+var parallaxOffsetX = 0;
+var parallaxOffsetY = 0;
+function parallaxEffect() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Dibujar la imagen original
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    // Aplicar el efecto Parallax
+    var parallaxImage = MathImg.applyParallaxEffect(imagenSal, parallaxOffsetX, parallaxOffsetY);
+    imagenSal.imageArray2DtoData(pantalla2, parallaxImage);
+    parallaxOffsetX += 1; //  ajustar la velocidad en X
+    parallaxOffsetY += 0.5; //  ajustar la velocidad en Y
+    requestAnimationFrame(parallaxEffect);
+}
+// Función para iniciar el efecto Parallax
+function startParallaxEffect(evt) {
+    init();
+    parallaxEffect();
+}
+//vortice//
+var vortexCenterX;
+var vortexCenterY;
+function vortexEffect() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Dibujar la imagen original
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    // Aplicar el efecto de vórtice
+    var vortexedImage = MathImg.applyVortexEffect(imagenSal, vortexCenterX, vortexCenterY);
+    imagenSal.imageArray2DtoData(pantalla2, vortexedImage);
+    requestAnimationFrame(vortexEffect);
+}
+function startVortexEffect(evt) {
+    init();
+    // Definir el centro del vórtice 
+    vortexCenterX = w / 2;
+    vortexCenterY = h / 2;
+    vortexEffect();
+}
+//CIELO ESTRELLADO//
+var starfieldInterval = null;
+function starfieldEffect() {
+    ctx.clearRect(0, 0, w, h);
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Dibujar la imagen original
+    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
+    // Aplicar el efecto de Desplazamiento de Cielo Estrellado
+    var starfieldImage = MathImg.applyStarfieldEffect(imagenSal);
+    imagenSal.imageArray2DtoData(pantalla2, starfieldImage);
+    requestAnimationFrame(starfieldEffect);
+}
+function startStarfieldEffect(evt) {
+    init();
+    // Iniciar la animación del efecto de Desplazamiento de Cielo Estrellado
+    starfieldInterval = setInterval(function () {
+        starfieldEffect();
+    }, 50); //  velocidad del efecto
 }
 function convertirEfectoMarciano(evt) {
     var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
@@ -455,6 +843,21 @@ document.getElementById("op-azul").addEventListener('click', convertirAAzul, fal
 document.getElementById("op-tricolor").addEventListener('click', convertirTricolor, false);
 document.getElementById("op-TricolorHorizontal").addEventListener('click', convertirTricolorHorizontal, false);
 document.getElementById("op-tricolorGradual").addEventListener('click', convertirTricolorGradual, false);
+(_a = document.getElementById("op-shift-effect")) === null || _a === void 0 ? void 0 : _a.addEventListener('click', startShiftEffect, false);
+(_b = document.getElementById("op-color-change")) === null || _b === void 0 ? void 0 : _b.addEventListener('click', startColorChange, false);
+(_c = document.getElementById("op-bubbles-effect")) === null || _c === void 0 ? void 0 : _c.addEventListener('click', startBubblesEffect, false);
+document.getElementById("op-rotation").addEventListener('click', startRotationEffect, false);
+document.getElementById('applyMirrorEffect').addEventListener('click', startMirrorEffect);
+document.getElementById("op-water").addEventListener('click', startWaterEffect, false);
+document.getElementById("op-butterflies").addEventListener('click', startButterfliesEffect, false);
+document.getElementById('applyAnimeEffect').addEventListener('click', startAnimeEffect);
+document.getElementById('applyGlitchEffect').addEventListener('click', glitchEffect);
+document.getElementById('applyThanosSnapEffect').addEventListener('click', startThanosSnapEffect);
+document.getElementById('applyMatrixEffect').addEventListener('click', startMatrixEffect);
+document.getElementById('applyBatmanEffect').addEventListener('click', startBatmanEffect);
+document.getElementById('startParallaxEffect').addEventListener('click', startParallaxEffect);
+document.getElementById('startVortexEffect').addEventListener('click', startVortexEffect);
+document.getElementById('applyStarfieldEffect').addEventListener('click', startStarfieldEffect);
 document.getElementById("op-realce").addEventListener('click', realce, false);
 document.getElementById("op-realcedefinido").addEventListener('click', realcedef, false);
 document.getElementById("op-marciano").addEventListener('click', convertirEfectoMarciano, false);
