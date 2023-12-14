@@ -1,4 +1,4 @@
-var _a, _b, _c;
+var _a, _b, _c, _d;
 import { ImageLocal } from "./ImageLocal.js";
 import { ImageType } from "./ImageType.js";
 import { MathImg } from "./MathImg.js";
@@ -335,15 +335,16 @@ function stopGlitchEffect() {
         glitchInterval = null;
     }
 }
-///thanos//
-var thanosInterval = null;
-function thanosSnapEffect() {
+///DESTRUCION EN PUNTOS BLANCOS//
+var BLANCOSInterval = null;
+var startTime = 0;
+function BLANCOSSnapEffect() {
     ctx.clearRect(0, 0, w, h);
     var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
     // Dibujar la imagen original
     ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
-    // Aplicar el efecto de Thanos Snap
-    var snappedImage = MathImg.applyThanosSnapEffect(imagenSal);
+    // Aplicar el efecto de BLANCOS Snap
+    var snappedImage = MathImg.applyBLANCOSSnapEffect(imagenSal);
     imagenSal.imageArray2DtoData(pantalla2, snappedImage);
     // Verificar si han pasado 3 segundos
     if (Date.now() - startTime >= 3000) {
@@ -353,20 +354,18 @@ function thanosSnapEffect() {
     }
     else {
         // Seguir animando hasta que pasen los 3 segundos
-        requestAnimationFrame(thanosSnapEffect);
+        requestAnimationFrame(BLANCOSSnapEffect);
     }
 }
-function startThanosSnapEffect(evt) {
+function startBLANCOSSnapEffect() {
     init();
     // Iniciar el temporizador de 3 segundos antes de aplicar el efecto
-    thanosInterval = setTimeout(function () {
+    BLANCOSInterval = setTimeout(function () {
         // Guardar el tiempo de inicio
         startTime = Date.now();
-        thanosSnapEffect();
-    }, 3000);
+        BLANCOSSnapEffect();
+    }, 30);
 }
-// Variable para almacenar el tiempo de inicio
-var startTime = 0;
 ///MATRIX//
 var matrixInterval = null;
 function matrixEffect() {
@@ -460,6 +459,58 @@ function startStarfieldEffect(evt) {
     starfieldInterval = setInterval(function () {
         starfieldEffect();
     }, 50); //  velocidad del efecto
+}
+////espiral///
+function startSwirlEffect(evt) {
+    // Inicializar la imagen
+    var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
+    // Inicializar el ángulo para simular el movimiento del torbellino
+    var angle = 0;
+    function animateSwirlEffect() {
+        // Aplicar el efecto de torbellino utilizando la función en MathImg
+        var swirlImage = MathImg.applySwirlEffect(imagenSal, angle);
+        // Mostrar la imagen resultante
+        imagenSal.imageArray2DtoData(pantalla2, swirlImage);
+        // Incrementar el ángulo para la próxima animación
+        angle += 0.05;
+        // Solicitar la siguiente animación
+        requestAnimationFrame(animateSwirlEffect);
+    }
+    // Iniciar la animación
+    animateSwirlEffect();
+}
+///pixeles saltarines//
+var distortionInterval = null;
+// Función para aplicar el efecto de distorsión aleatoria
+function applyRandomDistortion() {
+    ctx.clearRect(0, 0, w, h);
+    // Aplica la distorsión aleatoria a cada píxel de la imagen original
+    for (var y = 0; y < h; y++) {
+        for (var x = 0; x < w; x++) {
+            var offsetX = Math.random() * 20 - 10; // Ajusta la intensidad de la distorsión
+            var offsetY = Math.random() * 20 - 10;
+            var pixel = ctx.getImageData(x + offsetX, y + offsetY, 1, 1).data;
+            // Dibuja el píxel distorsionado en el lienzo principal
+            ctx.fillStyle = "rgba(".concat(pixel[0], ", ").concat(pixel[1], ", ").concat(pixel[2], ", ").concat(pixel[3] / 255, ")");
+            ctx.fillRect(x, y, 1, 1);
+        }
+    }
+    // Solicita la siguiente animación
+    distortionInterval = requestAnimationFrame(applyRandomDistortion);
+}
+// Función para detener el efecto de distorsión
+function stopDistortionEffect() {
+    cancelAnimationFrame(distortionInterval);
+}
+// Función para iniciar y detener el efecto al hacer clic en un botón
+function toggleDistortionEffect() {
+    if (distortionInterval) {
+        stopDistortionEffect();
+    }
+    else {
+        init();
+        applyRandomDistortion();
+    }
 }
 function convertirEfectoMarciano(evt) {
     var imagenSal = new ImageType(pantalla1, imgLocal.getImage());
@@ -852,12 +903,14 @@ document.getElementById("op-water").addEventListener('click', startWaterEffect, 
 document.getElementById("op-butterflies").addEventListener('click', startButterfliesEffect, false);
 document.getElementById('applyAnimeEffect').addEventListener('click', startAnimeEffect);
 document.getElementById('applyGlitchEffect').addEventListener('click', glitchEffect);
-document.getElementById('applyThanosSnapEffect').addEventListener('click', startThanosSnapEffect);
+(_d = document.getElementById('applyBLANCOSSnapEffect')) === null || _d === void 0 ? void 0 : _d.addEventListener('click', startBLANCOSSnapEffect);
 document.getElementById('applyMatrixEffect').addEventListener('click', startMatrixEffect);
 document.getElementById('applyBatmanEffect').addEventListener('click', startBatmanEffect);
 document.getElementById('startParallaxEffect').addEventListener('click', startParallaxEffect);
 document.getElementById('startVortexEffect').addEventListener('click', startVortexEffect);
 document.getElementById('applyStarfieldEffect').addEventListener('click', startStarfieldEffect);
+document.getElementById('applySwirlEffect').addEventListener('click', startSwirlEffect);
+document.getElementById('toggleDistortionEffect').addEventListener('click', toggleDistortionEffect);
 document.getElementById("op-realce").addEventListener('click', realce, false);
 document.getElementById("op-realcedefinido").addEventListener('click', realcedef, false);
 document.getElementById("op-marciano").addEventListener('click', convertirEfectoMarciano, false);

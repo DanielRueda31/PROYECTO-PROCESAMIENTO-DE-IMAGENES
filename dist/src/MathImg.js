@@ -443,17 +443,26 @@ var MathImg = /** @class */ (function () {
         }
         return glitchedImage;
     };
-    ////thanos///
-    MathImg.applyThanosSnapEffect = function (img) {
+    ////PUNTOSBLANCOS///
+    MathImg.applyBLANCOSSnapEffect = function (img) {
         var arrImage = img.getArrayImg();
         var width = img.getWidth();
         var height = img.getHeight();
-        var snappedImage = this.initArray(width, height);
+        var snappedImage = [];
+        for (var i = 0; i < 3; i++) {
+            snappedImage[i] = new Array(height);
+            for (var j = 0; j < height; j++) {
+                snappedImage[i][j] = new Array(width);
+                for (var k = 0; k < width; k++) {
+                    snappedImage[i][j][k] = 0;
+                }
+            }
+        }
         for (var i = 0; i < height; i++) {
             for (var j = 0; j < width; j++) {
                 if (Math.random() > 0.5) {
                     for (var c = 0; c < 3; c++) {
-                        snappedImage[c][i][j] = 255; // Píxel blanco para el efecto de desvanecimiento
+                        snappedImage[c][i][j] = 255;
                     }
                 }
                 else {
@@ -592,6 +601,34 @@ var MathImg = /** @class */ (function () {
         }
         return starfieldImage;
     };
+    ///aspiral//
+    MathImg.applySwirlEffect = function (image, angle) {
+        var arrImage = image.getArrayImg();
+        var width = image.getWidth();
+        var height = image.getHeight();
+        var swirlImage = this.initArray(width, height);
+        var centerX = width / 2;
+        var centerY = height / 2;
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                for (var c = 0; c < 3; c++) {
+                    // Calcular la posición en el torbellino
+                    var x = j - centerX;
+                    var y = i - centerY;
+                    var radius = Math.sqrt(x * x + y * y);
+                    var angleOffset = (angle * radius) / 100;
+                    var newX = Math.cos(angleOffset) * x - Math.sin(angleOffset) * y + centerX;
+                    var newY = Math.sin(angleOffset) * x + Math.cos(angleOffset) * y + centerY;
+                    // Asegurarse de que la nueva posición está dentro de los límites
+                    var clampedX = Math.max(0, Math.min(width - 1, Math.round(newX)));
+                    var clampedY = Math.max(0, Math.min(height - 1, Math.round(newY)));
+                    swirlImage[c][i][j] = arrImage[c][clampedY][clampedX];
+                }
+            }
+        }
+        return swirlImage;
+    };
+    //pixeles que rebotan///
     MathImg.toluster = function (img, umbral) {
         //variable que guarda el arreglo 3d de la imagen de color
         var arrImage = img.getArrayImg();

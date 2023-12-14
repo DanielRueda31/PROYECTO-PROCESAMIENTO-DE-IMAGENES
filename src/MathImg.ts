@@ -503,26 +503,36 @@ public static applyGlitchEffect(img: ImageType): number[][][] {
 }
 
 
-////thanos///
-public static applyThanosSnapEffect(img: ImageType): number[][][] {
+////PUNTOSBLANCOS///
+public static applyBLANCOSSnapEffect(img: ImageType): number[][][] {
   const arrImage = img.getArrayImg();
   const width = img.getWidth();
   const height = img.getHeight();
 
-  const snappedImage = this.initArray(width, height);
+  const snappedImage: number[][][] = [];
+
+  for (let i = 0; i < 3; i++) {
+    snappedImage[i] = new Array(height);
+    for (let j = 0; j < height; j++) {
+      snappedImage[i][j] = new Array(width);
+      for (let k = 0; k < width; k++) {
+        snappedImage[i][j][k] = 0;
+      }
+    }
+  }
 
   for (let i = 0; i < height; i++) {
-      for (let j = 0; j < width; j++) {
-          if (Math.random() > 0.5) {
-              for (let c = 0; c < 3; c++) {
-                  snappedImage[c][i][j] = 255; // Píxel blanco para el efecto de desvanecimiento
-              }
-          } else {
-              for (let c = 0; c < 3; c++) {
-                  snappedImage[c][i][j] = arrImage[c][i][j];
-              }
-          }
+    for (let j = 0; j < width; j++) {
+      if (Math.random() > 0.5) {
+        for (let c = 0; c < 3; c++) {
+          snappedImage[c][i][j] = 255;
+        }
+      } else {
+        for (let c = 0; c < 3; c++) {
+          snappedImage[c][i][j] = arrImage[c][i][j];
+        }
       }
+    }
   }
 
   return snappedImage;
@@ -682,6 +692,73 @@ public static applyStarfieldEffect(img: ImageType): number[][][] {
 
   return starfieldImage;
 }
+
+///aspiral//
+
+
+public static applySwirlEffect(image: ImageType, angle: number): number[][][] {
+  const arrImage = image.getArrayImg();
+  const width = image.getWidth();
+  const height = image.getHeight();
+
+  const swirlImage = this.initArray(width, height);
+
+  const centerX = width / 2;
+  const centerY = height / 2;
+
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      for (let c = 0; c < 3; c++) {
+        // Calcular la posición en el torbellino
+        const x = j - centerX;
+        const y = i - centerY;
+
+        const radius = Math.sqrt(x * x + y * y);
+        const angleOffset = (angle * radius) / 100;
+
+        const newX = Math.cos(angleOffset) * x - Math.sin(angleOffset) * y + centerX;
+        const newY = Math.sin(angleOffset) * x + Math.cos(angleOffset) * y + centerY;
+
+        // Asegurarse de que la nueva posición está dentro de los límites
+        const clampedX = Math.max(0, Math.min(width - 1, Math.round(newX)));
+        const clampedY = Math.max(0, Math.min(height - 1, Math.round(newY)));
+
+        swirlImage[c][i][j] = arrImage[c][clampedY][clampedX];
+      }
+    }
+  }
+
+  return swirlImage;
+}
+
+///distorsiones//
+public static applyWaveDistortionEffect(img: ImageType, time: number): number[][][] {
+  const arrImage = img.getArrayImg();
+  const width = img.getWidth();
+  const height = img.getHeight();
+
+  const distortedImage = this.initArray(width, height);
+
+  for (let i = 0; i < height; i++) {
+    for (let j = 0; j < width; j++) {
+      const offsetX = 20 * Math.sin((i / 10) + time / 30); // Ajusta según la velocidad y amplitud de las ondas
+      const offsetY = 20 * Math.sin((j / 10) + time / 30);
+
+      const newX = Math.floor(j + offsetX);
+      const newY = Math.floor(i + offsetY);
+
+      const clampedX = Math.max(0, Math.min(width - 1, newX));
+      const clampedY = Math.max(0, Math.min(height - 1, newY));
+
+      distortedImage[0][i][j] = arrImage[0][clampedY][clampedX] || 0; // R
+      distortedImage[1][i][j] = arrImage[1][clampedY][clampedX] || 0; // G
+      distortedImage[2][i][j] = arrImage[2][clampedY][clampedX] || 0; // B
+    }
+  }
+
+  return distortedImage;
+}
+
 
 
 

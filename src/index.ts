@@ -438,10 +438,11 @@ function stopGlitchEffect() {
 }
 
 
-///thanos//
-let thanosInterval: number | null = null;
+///DESTRUCION EN PUNTOS BLANCOS//
+let BLANCOSInterval: number | null = null;
+let startTime: number = 0;
 
-function thanosSnapEffect(): void {
+function BLANCOSSnapEffect(): void {
   ctx.clearRect(0, 0, w, h);
 
   const imagenSal: ImageType = new ImageType(pantalla1, imgLocal.getImage());
@@ -449,8 +450,8 @@ function thanosSnapEffect(): void {
   // Dibujar la imagen original
   ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
 
-  // Aplicar el efecto de Thanos Snap
-  const snappedImage = MathImg.applyThanosSnapEffect(imagenSal);
+  // Aplicar el efecto de BLANCOS Snap
+  const snappedImage = MathImg.applyBLANCOSSnapEffect(imagenSal);
   imagenSal.imageArray2DtoData(pantalla2, snappedImage);
 
   // Verificar si han pasado 3 segundos
@@ -460,24 +461,20 @@ function thanosSnapEffect(): void {
     ctx.fillRect(0, 0, w, h);  // Rellenar el lienzo con un rectángulo negro
   } else {
     // Seguir animando hasta que pasen los 3 segundos
-    requestAnimationFrame(thanosSnapEffect);
+    requestAnimationFrame(BLANCOSSnapEffect);
   }
 }
 
-function startThanosSnapEffect(evt: any): void {
+function startBLANCOSSnapEffect(): void {
   init();
 
   // Iniciar el temporizador de 3 segundos antes de aplicar el efecto
-  thanosInterval = setTimeout(() => {
+  BLANCOSInterval = setTimeout(() => {
     // Guardar el tiempo de inicio
     startTime = Date.now();
-    thanosSnapEffect();
-  }, 3000);
+    BLANCOSSnapEffect();
+  }, 30);
 }
-
-// Variable para almacenar el tiempo de inicio
-let startTime: number = 0;
-
 
 
 
@@ -614,6 +611,44 @@ function startStarfieldEffect(evt: any): void {
     starfieldEffect();
   }, 50); //  velocidad del efecto
 }
+
+
+////espiral///
+function startSwirlEffect(evt: any): void {
+  // Inicializar la imagen
+  const imagenSal: ImageType = new ImageType(pantalla1, imgLocal.getImage());
+
+  // Inicializar el ángulo para simular el movimiento del torbellino
+  let angle = 0;
+
+  function animateSwirlEffect() {
+    // Aplicar el efecto de torbellino utilizando la función en MathImg
+    const swirlImage = MathImg.applySwirlEffect(imagenSal, angle);
+
+    // Mostrar la imagen resultante
+    imagenSal.imageArray2DtoData(pantalla2, swirlImage);
+
+    // Incrementar el ángulo para la próxima animación
+    angle += 0.05;
+
+    // Solicitar la siguiente animación
+    requestAnimationFrame(animateSwirlEffect);
+  }
+
+  // Iniciar la animación
+  animateSwirlEffect();
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1059,6 +1094,9 @@ document.getElementById("op-azul").addEventListener('click', convertirAAzul, fal
 document.getElementById("op-tricolor").addEventListener('click', convertirTricolor, false);
 document.getElementById("op-TricolorHorizontal").addEventListener('click', convertirTricolorHorizontal, false);
 document.getElementById("op-tricolorGradual").addEventListener('click', convertirTricolorGradual, false);
+
+
+
 document.getElementById("op-shift-effect")?.addEventListener('click', startShiftEffect, false);
 document.getElementById("op-color-change")?.addEventListener('click', startColorChange, false);
 document.getElementById("op-bubbles-effect")?.addEventListener('click', startBubblesEffect, false);
@@ -1068,12 +1106,15 @@ document.getElementById("op-water").addEventListener('click', startWaterEffect, 
 document.getElementById("op-butterflies").addEventListener('click', startButterfliesEffect, false);
 document.getElementById('applyAnimeEffect').addEventListener('click', startAnimeEffect);
 document.getElementById('applyGlitchEffect').addEventListener('click', glitchEffect);
-document.getElementById('applyThanosSnapEffect').addEventListener('click', startThanosSnapEffect);
+document.getElementById('applyBLANCOSSnapEffect')?.addEventListener('click', startBLANCOSSnapEffect);
 document.getElementById('applyMatrixEffect').addEventListener('click', startMatrixEffect);
 document.getElementById('applyBatmanEffect').addEventListener('click', startBatmanEffect);
 document.getElementById('startParallaxEffect').addEventListener('click', startParallaxEffect);
 document.getElementById('startVortexEffect').addEventListener('click', startVortexEffect);
 document.getElementById('applyStarfieldEffect').addEventListener('click', startStarfieldEffect);
+document.getElementById('applySwirlEffect').addEventListener('click', startSwirlEffect);
+
+
 
 
 
