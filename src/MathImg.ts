@@ -1,7 +1,5 @@
 
 import { ImageType } from "./ImageType.js";
-import { Bubble } from "./index.js";
-import { Butterfly } from "./index.js";
 export class MathImg {
 
   public static initArray(width: number, height: number): any {
@@ -311,26 +309,6 @@ public static applyShiftEffect(img: ImageType, offsetX: number, offsetY: number)
   return shiftedImage;
 } 
 
-//BURBUJAS
-public static createBubblesEffect(width: number, height: number, bubbles: Bubble[]): number[][][] {
-  const bubbleImage = this.initArray(width, height);
-
-  for (let i = 0; i < height; i++) {
-      for (let j = 0; j < width; j++) {
-          for (const bubble of bubbles) {
-              const distance = Math.sqrt((i - bubble.y) ** 2 + (j - bubble.x) ** 2);
-
-              if (distance < bubble.radius) {
-                  bubbleImage[0][i][j] = 255; // R
-                  bubbleImage[1][i][j] = 255; // G
-                  bubbleImage[2][i][j] = 255; // B
-              }
-          }
-      }
-  }
-
-  return bubbleImage;
-}
 //ROTACION
 public static applyRotationEffect(img: ImageType, angle: number): number[][][] {
   const arrImage = img.getArrayImg();
@@ -410,40 +388,6 @@ public static applyWaterEffect(image: ImageType, time: number): number[][][] {
   }
 
   return waterImage;
-}
-
-//Mariposas
-public static createButterfliesEffect(width: number, height: number, butterflies: Butterfly[]): number[][][] {
-  // Inicializar un array de imagen
-  const butterfliesImage = this.initArray(width, height);
-
-  // Dibujar cada mariposa en el array de imagen
-  for (const butterfly of butterflies) {
-    this.drawButterfly(butterfly, butterfliesImage);
-  }
-
-  return butterfliesImage;
-}
-
-// Función para dibujar una mariposa en el array de imagen
-private static drawButterfly(butterfly: Butterfly, imageArray: number[][][]): void {
-  const x = Math.round(butterfly.x);
-  const y = Math.round(butterfly.y);
-  const size = Math.round(butterfly.size);
-
-  // Verificar que la mariposa esté dentro del área de la imagen
-  if (x < 0 || x + size >= imageArray[0].length || y < 0 || y + size >= imageArray.length) {
-    return;
-  }
-
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      // Asignar un valor específico para indicar la presencia de una mariposa
-      imageArray[0][y + i][x + j] = 255; // R
-      imageArray[1][y + i][x + j] = 255; // G
-      imageArray[2][y + i][x + j] = 255; // B
-    }
-  }
 }
 
 
@@ -538,81 +482,27 @@ public static applyBLANCOSSnapEffect(img: ImageType): number[][][] {
   return snappedImage;
 }
 
-///MATRIX//
-public static applyMatrixEffect(img: ImageType): number[][][] {
+///confeti//
+public static applyconfetiEffect(img: ImageType): number[][][] {
   const arrImage = img.getArrayImg();
   const width = img.getWidth();
   const height = img.getHeight();
 
-  const matrixImage = this.initArray(width, height);
+  const confetiImage = this.initArray(width, height);
 
   for (let i = 0; i < height; i++) {
     for (let j = 0; j < width; j++) {
       for (let c = 0; c < 3; c++) {
         // Generar un efecto de números aleatorios en verde 
-        matrixImage[c][i][j] = Math.random() > 0.9 ? 255 : 0;
+        confetiImage[c][i][j] = Math.random() > 0.9 ? 255 : 0;
       }
     }
   }
 
-  return matrixImage;
-}
-///batman//
-public static applyBatmanEffect(img: ImageType): number[][][] {
-  const arrImage = img.getArrayImg();
-  const width = img.getWidth();
-  const height = img.getHeight();
-
-  const batmanImage = this.initArray(width, height);
-
-  // Definir las coordenadas del centro del murciélago
-  const batmanCenterX = Math.floor(width / 2);
-  const batmanCenterY = Math.floor(height / 2);
-
-  // Tamaño del murciélago
-  const batmanSize = Math.min(Math.floor(width / 2), Math.floor(height / 2));
-
-  // Obtener la imagen del murciélago 
-  const batmanData = [
-    [0, 0, 0, 0, 255, 255, 0, 0, 0, 0],
-    [0, 0, 0, 255, 255, 255, 255, 0, 0, 0],
-    [0, 0, 255, 255, 255, 255, 255, 255, 0, 0],
-    [0, 255, 255, 255, 255, 255, 255, 255, 255, 0],
-    [255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-    [255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-    [0, 0, 255, 0, 255, 255, 0, 255, 0, 0],
-    [0, 255, 0, 0, 255, 255, 0, 0, 255, 0],
-    [0, 0, 0, 255, 0, 0, 255, 0, 0, 0],
-    [0, 0, 0, 0, 255, 255, 0, 0, 0, 0],
-  ];
-  for (let i = 0; i < height; i++) {
-    for (let j = 0; j < width; j++) {
-      for (let c = 0; c < 3; c++) {
-        // Calcular las coordenadas relativas en la imagen del murciélago
-        const batmanX = j - batmanCenterX + batmanSize / 2;
-        const batmanY = i - batmanCenterY + batmanSize / 2;
-
-        // Verificar si estamos dentro del área del murciélago
-        if (
-          batmanX >= 0 &&
-          batmanX < batmanSize &&
-          batmanY >= 0 &&
-          batmanY < batmanSize &&
-          batmanData[Math.floor((batmanY / batmanSize) * 8)][Math.floor((batmanX / batmanSize) * 8)] === 255
-        ) {
-          // Asignar un valor específico para indicar la presencia del murciélago (en este caso, negro)
-          batmanImage[c][i][j] = 0; // R, G, B
-        } else {
-          // Copiar el valor original si no estamos en el murciélago
-          batmanImage[c][i][j] = arrImage[c][i][j];
-        }
-      }
-    }
-  }
-
-  return batmanImage;
+  return confetiImage;
 }
 
+////ESPEJITOS//
 public static applyParallaxEffect(img: ImageType, offsetX: number, offsetY: number): number[][][] {
   const arrImage = img.getArrayImg();
   const width = img.getWidth();

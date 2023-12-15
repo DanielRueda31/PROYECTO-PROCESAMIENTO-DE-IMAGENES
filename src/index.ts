@@ -140,92 +140,6 @@ function startShiftEffect(evt: any): void {
 }
 
 
-
-///burbujaaaaaaas/////
-export class Bubble {
-
-  x: number;
-  y: number;
-  radius: number;
-  speedX: number;
-  speedY: number;
-
-  constructor(x: number, y: number, radius: number, speedX: number, speedY: number) {
-      this.x = x;
-      this.y = y;
-      this.radius = radius;
-      this.speedX = speedX;
-      this.speedY = speedY;
-  }
-
-  update() {
-      this.x += this.speedX;
-      this.y += this.speedY;
-
-      // Rebote en los bordes 
-      if (this.x - this.radius < 0 || this.x + this.radius > w) {
-          this.speedX = -this.speedX;
-      }
-
-      if (this.y - this.radius < 0 || this.y + this.radius > h) {
-          this.speedY = -this.speedY;
-      }
-  }
-
-  draw() {
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(2, 25, 55, 0.5)';
-      ctx.fill();
-      ctx.closePath();
-  }
-}
-const numberOfBubbles = 100;
-const bubblesArray: Bubble[] = [];
-
-function initBubbles() {
-  for (let i = 0; i < numberOfBubbles; i++) {
-      const radius = Math.random() * 20 + 5; // Radio aleatorio entre 5 y 25
-      const x = Math.random() * (w - 2 * radius) + radius;
-      const y = Math.random() * (h - 2 * radius) + radius;
-      const speedX = (Math.random() - 0.5) * 4; // Velocidad aleatoria entre -2 y 2
-      const speedY = (Math.random() - 0.5) * 4;
-
-      const bubble = new Bubble(x, y, radius, speedX, speedY);
-      bubblesArray.push(bubble);
-  }
-}
-
-
-
-function animateBubbles() {
-    ctx.clearRect(0, 0, w, h);
-
-    const imagenSal: ImageType = new ImageType(pantalla1, imgLocal.getImage());
-    const bubbleImage = MathImg.createBubblesEffect(w, h, bubblesArray);
-
-    // Dibujar la imagen original
-    ctx.globalAlpha = 0.5; //opacidad
-    ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
-    ctx.globalAlpha = 1; // Restaurar la opacidad
-
-    // Aplicar el efecto de burbujas
-    imagenSal.imageArray2DtoData(pantalla2, bubbleImage);
-
-    for (let i = 0; i < bubblesArray.length; i++) {
-        bubblesArray[i].update();
-        bubblesArray[i].draw();
-    }
-
-    requestAnimationFrame(animateBubbles);
-}
-
-function startBubblesEffect(evt: any): void {
-  init();
-  initBubbles();
-  animateBubbles();
-}
-
 //rotacion////
 let rotationAngle = 0;
 
@@ -300,88 +214,6 @@ function startWaterEffect(evt: any): void {
   animateWaterEffect();
 }
 
-///mariposas///
-export class Butterfly {
-  x: number;
-  y: number;
-  size: number;
-  speedX: number;
-  speedY: number;
-  texture: HTMLImageElement; 
-
-  constructor(x: number, y: number, size: number, speedX: number, speedY: number, texture: HTMLImageElement) {
-    this.x = x;
-    this.y = y;
-    this.size = size;
-    this.speedX = speedX;
-    this.speedY = speedY;
-    this.texture = texture;
-  }
-
-
- update() {
-    this.x += this.speedX;
-    this.y += this.speedY;
-
-    // Lógica de rebote en los bordes
-    if (this.x < 0 || this.x + this.size > w) {
-      this.speedX = -this.speedX;
-    }
-
-    if (this.y < 0 || this.y + this.size > h) {
-      this.speedY = -this.speedY;
-    }
-  
-  }
-
-  draw(ctx: CanvasRenderingContext2D) {
-    ctx.drawImage(this.texture, this.x, this.y, this.size, this.size);
-
-  }
-}
-
-// Textura de la mariposa
-const butterflyTexture = new Image();
-butterflyTexture.src = 'mariposa.png'; 
-
-// Número de mariposas y array de mariposas
-const numberOfButterflies = 20; 
-const butterfliesArray: Butterfly[] = [];
-
-// Inicializar mariposas
-function initButterflies() {
-  for (let i = 0; i < numberOfButterflies; i++) {
-    const size = Math.random() * 30 + 20; // Tamaño aleatorio entre 20 y 50
-    const marginX = 50; // Márgenes en el eje X
-    const marginY = 50; // Márgenes en el eje Y
-    const x = Math.random() * (w - size - 2 * marginX) + marginX; // Ajusta el margen en el eje X
-    const y = Math.random() * (h - size - 2 * marginY) + marginY; // Ajusta el margen en el eje Y
-    const speedX = (Math.random() - 0.5) * 2; // Velocidad aleatoria entre -1 y 1
-    const speedY = (Math.random() - 0.5) * 2;
-
-    const butterfly = new Butterfly(x, y, size, speedX, speedY, butterflyTexture);
-    butterfliesArray.push(butterfly);
-  }
-}
-
-// Animar mariposas
-function animateButterflies() {
-  ctx.clearRect(0, 0, w, h);
-
-  for (let i = 0; i < butterfliesArray.length; i++) {
-    butterfliesArray[i].update();
-    butterfliesArray[i].draw(ctx);
-  }
-
-  requestAnimationFrame(animateButterflies);
-}
-
-// Función para iniciar el efecto de mariposas
-function startButterfliesEffect(evt: any): void {
-  init();
-  initButterflies();
-  animateButterflies();
-}
 
 ///ANIME////
 
@@ -478,10 +310,10 @@ function startBLANCOSSnapEffect(): void {
 
 
 
-///MATRIX//
-let matrixInterval: number | null = null;
+///confeti//
+let confetiInterval: number | null = null;
 
-function matrixEffect(): void {
+function confetiEffect(): void {
   ctx.clearRect(0, 0, w, h);
 
   const imagenSal: ImageType = new ImageType(pantalla1, imgLocal.getImage());
@@ -489,44 +321,23 @@ function matrixEffect(): void {
   // Dibujar la imagen original
   ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
 
-  // Aplicar el efecto Matrix
-  const matrixImage = MathImg.applyMatrixEffect(imagenSal);
-  imagenSal.imageArray2DtoData(pantalla2, matrixImage);
+  // Aplicar el efecto confeti
+  const confetiImage = MathImg.applyconfetiEffect(imagenSal);
+  imagenSal.imageArray2DtoData(pantalla2, confetiImage);
 
-  requestAnimationFrame(matrixEffect);
+  requestAnimationFrame(confetiEffect);
 }
 
-function startMatrixEffect(evt: any): void {
+function startconfetiEffect(evt: any): void {
   init();
 
-  // Iniciar el efecto Matrix
-  matrixInterval = setInterval(() => {
-    matrixEffect();
+  // Iniciar el efecto confeti
+  confetiInterval = setInterval(() => {
+    confetiEffect();
   }, 100); // Ajusta la velocidad 
 }
 
-////BATMAN///
-let batmanInterval: number | null = null;
 
-function batmanEffect(): void {
-  ctx.clearRect(0, 0, w, h);
-
-  const imagenSal: ImageType = new ImageType(pantalla1, imgLocal.getImage());
-
-  // Dibujar la imagen original
-  ctx.drawImage(imgLocal.getImage(), 0, 0, w, h);
-
-  // Aplicar el efecto de Batman
-  const batmanImage = MathImg.applyBatmanEffect(imagenSal);
-  imagenSal.imageArray2DtoData(pantalla2, batmanImage);
-
-  requestAnimationFrame(batmanEffect);
-}
-
-function startBatmanEffect(evt: any): void {
-  init();
-  batmanEffect();
-}
 
 ///STARPARALLAXEFFECT//
 let parallaxOffsetX = 0;
@@ -1099,16 +910,13 @@ document.getElementById("op-tricolorGradual").addEventListener('click', converti
 
 document.getElementById("op-shift-effect")?.addEventListener('click', startShiftEffect, false);
 document.getElementById("op-color-change")?.addEventListener('click', startColorChange, false);
-document.getElementById("op-bubbles-effect")?.addEventListener('click', startBubblesEffect, false);
 document.getElementById("op-rotation").addEventListener('click', startRotationEffect, false);
 document.getElementById('applyMirrorEffect').addEventListener('click', startMirrorEffect);
 document.getElementById("op-water").addEventListener('click', startWaterEffect, false); 
-document.getElementById("op-butterflies").addEventListener('click', startButterfliesEffect, false);
 document.getElementById('applyAnimeEffect').addEventListener('click', startAnimeEffect);
 document.getElementById('applyGlitchEffect').addEventListener('click', glitchEffect);
 document.getElementById('applyBLANCOSSnapEffect')?.addEventListener('click', startBLANCOSSnapEffect);
-document.getElementById('applyMatrixEffect').addEventListener('click', startMatrixEffect);
-document.getElementById('applyBatmanEffect').addEventListener('click', startBatmanEffect);
+document.getElementById('applyconfetiEffect').addEventListener('click', startconfetiEffect);
 document.getElementById('startParallaxEffect').addEventListener('click', startParallaxEffect);
 document.getElementById('startVortexEffect').addEventListener('click', startVortexEffect);
 document.getElementById('applyStarfieldEffect').addEventListener('click', startStarfieldEffect);

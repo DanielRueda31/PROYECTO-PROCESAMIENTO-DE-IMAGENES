@@ -292,24 +292,6 @@ var MathImg = /** @class */ (function () {
         }
         return shiftedImage;
     };
-    //BURBUJAS
-    MathImg.createBubblesEffect = function (width, height, bubbles) {
-        var bubbleImage = this.initArray(width, height);
-        for (var i = 0; i < height; i++) {
-            for (var j = 0; j < width; j++) {
-                for (var _i = 0, bubbles_1 = bubbles; _i < bubbles_1.length; _i++) {
-                    var bubble = bubbles_1[_i];
-                    var distance = Math.sqrt(Math.pow((i - bubble.y), 2) + Math.pow((j - bubble.x), 2));
-                    if (distance < bubble.radius) {
-                        bubbleImage[0][i][j] = 255; // R
-                        bubbleImage[1][i][j] = 255; // G
-                        bubbleImage[2][i][j] = 255; // B
-                    }
-                }
-            }
-        }
-        return bubbleImage;
-    };
     //ROTACION
     MathImg.applyRotationEffect = function (img, angle) {
         var arrImage = img.getArrayImg();
@@ -370,35 +352,6 @@ var MathImg = /** @class */ (function () {
             }
         }
         return waterImage;
-    };
-    //Mariposas
-    MathImg.createButterfliesEffect = function (width, height, butterflies) {
-        // Inicializar un array de imagen
-        var butterfliesImage = this.initArray(width, height);
-        // Dibujar cada mariposa en el array de imagen
-        for (var _i = 0, butterflies_1 = butterflies; _i < butterflies_1.length; _i++) {
-            var butterfly = butterflies_1[_i];
-            this.drawButterfly(butterfly, butterfliesImage);
-        }
-        return butterfliesImage;
-    };
-    // Función para dibujar una mariposa en el array de imagen
-    MathImg.drawButterfly = function (butterfly, imageArray) {
-        var x = Math.round(butterfly.x);
-        var y = Math.round(butterfly.y);
-        var size = Math.round(butterfly.size);
-        // Verificar que la mariposa esté dentro del área de la imagen
-        if (x < 0 || x + size >= imageArray[0].length || y < 0 || y + size >= imageArray.length) {
-            return;
-        }
-        for (var i = 0; i < size; i++) {
-            for (var j = 0; j < size; j++) {
-                // Asignar un valor específico para indicar la presencia de una mariposa
-                imageArray[0][y + i][x + j] = 255; // R
-                imageArray[1][y + i][x + j] = 255; // G
-                imageArray[2][y + i][x + j] = 255; // B
-            }
-        }
     };
     //ANIME
     MathImg.applyAnimeEffect = function (img) {
@@ -474,70 +427,23 @@ var MathImg = /** @class */ (function () {
         }
         return snappedImage;
     };
-    ///MATRIX//
-    MathImg.applyMatrixEffect = function (img) {
+    ///confeti//
+    MathImg.applyconfetiEffect = function (img) {
         var arrImage = img.getArrayImg();
         var width = img.getWidth();
         var height = img.getHeight();
-        var matrixImage = this.initArray(width, height);
+        var confetiImage = this.initArray(width, height);
         for (var i = 0; i < height; i++) {
             for (var j = 0; j < width; j++) {
                 for (var c = 0; c < 3; c++) {
                     // Generar un efecto de números aleatorios en verde 
-                    matrixImage[c][i][j] = Math.random() > 0.9 ? 255 : 0;
+                    confetiImage[c][i][j] = Math.random() > 0.9 ? 255 : 0;
                 }
             }
         }
-        return matrixImage;
+        return confetiImage;
     };
-    ///batman//
-    MathImg.applyBatmanEffect = function (img) {
-        var arrImage = img.getArrayImg();
-        var width = img.getWidth();
-        var height = img.getHeight();
-        var batmanImage = this.initArray(width, height);
-        // Definir las coordenadas del centro del murciélago
-        var batmanCenterX = Math.floor(width / 2);
-        var batmanCenterY = Math.floor(height / 2);
-        // Tamaño del murciélago
-        var batmanSize = Math.min(Math.floor(width / 2), Math.floor(height / 2));
-        // Obtener la imagen del murciélago 
-        var batmanData = [
-            [0, 0, 0, 0, 255, 255, 0, 0, 0, 0],
-            [0, 0, 0, 255, 255, 255, 255, 0, 0, 0],
-            [0, 0, 255, 255, 255, 255, 255, 255, 0, 0],
-            [0, 255, 255, 255, 255, 255, 255, 255, 255, 0],
-            [255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-            [255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-            [0, 0, 255, 0, 255, 255, 0, 255, 0, 0],
-            [0, 255, 0, 0, 255, 255, 0, 0, 255, 0],
-            [0, 0, 0, 255, 0, 0, 255, 0, 0, 0],
-            [0, 0, 0, 0, 255, 255, 0, 0, 0, 0],
-        ];
-        for (var i = 0; i < height; i++) {
-            for (var j = 0; j < width; j++) {
-                for (var c = 0; c < 3; c++) {
-                    // Calcular las coordenadas relativas en la imagen del murciélago
-                    var batmanX = j - batmanCenterX + batmanSize / 2;
-                    var batmanY = i - batmanCenterY + batmanSize / 2;
-                    // Verificar si estamos dentro del área del murciélago
-                    if (batmanX >= 0 &&
-                        batmanX < batmanSize &&
-                        batmanY >= 0 &&
-                        batmanY < batmanSize &&
-                        batmanData[Math.floor((batmanY / batmanSize) * 8)][Math.floor((batmanX / batmanSize) * 8)] === 255) {
-                        // Asignar un valor específico para indicar la presencia del murciélago (en este caso, negro)
-                        batmanImage[c][i][j] = 0; // R, G, B
-                    }
-                    else {
-                        // Copiar el valor original si no estamos en el murciélago
-                        batmanImage[c][i][j] = arrImage[c][i][j];
-                    }
-                }
-            }
-        }
-        return batmanImage;
-    };
+    ////ESPEJITOS//
     MathImg.applyParallaxEffect = function (img, offsetX, offsetY) {
         var arrImage = img.getArrayImg();
         var width = img.getWidth();
@@ -628,7 +534,27 @@ var MathImg = /** @class */ (function () {
         }
         return swirlImage;
     };
-    //pixeles que rebotan///
+    ///distorsiones//
+    MathImg.applyWaveDistortionEffect = function (img, time) {
+        var arrImage = img.getArrayImg();
+        var width = img.getWidth();
+        var height = img.getHeight();
+        var distortedImage = this.initArray(width, height);
+        for (var i = 0; i < height; i++) {
+            for (var j = 0; j < width; j++) {
+                var offsetX = 20 * Math.sin((i / 10) + time / 30); // Ajusta según la velocidad y amplitud de las ondas
+                var offsetY = 20 * Math.sin((j / 10) + time / 30);
+                var newX = Math.floor(j + offsetX);
+                var newY = Math.floor(i + offsetY);
+                var clampedX = Math.max(0, Math.min(width - 1, newX));
+                var clampedY = Math.max(0, Math.min(height - 1, newY));
+                distortedImage[0][i][j] = arrImage[0][clampedY][clampedX] || 0; // R
+                distortedImage[1][i][j] = arrImage[1][clampedY][clampedX] || 0; // G
+                distortedImage[2][i][j] = arrImage[2][clampedY][clampedX] || 0; // B
+            }
+        }
+        return distortedImage;
+    };
     MathImg.toluster = function (img, umbral) {
         //variable que guarda el arreglo 3d de la imagen de color
         var arrImage = img.getArrayImg();
